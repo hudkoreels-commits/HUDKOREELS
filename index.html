@@ -2,66 +2,134 @@
 <html lang="kn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 HUDKO REELS STUDIO v10.0 - PERFECT PRODUCTION</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎬 HUDKO REELS STUDIO v200 - MAX PRO</title>
 
 <style>
-* { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-body { margin: 0; background: #020202; overflow: hidden; color: white; user-select: none; }
+/* ಒರಿಜಿನಲ್ ಲೇಔಟ್ */
+* { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
+body { background: #000; overflow: hidden; color: white; user-select: none; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
 
-/* LOGIN SCREEN */
-#authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle, #1a1a1a, #050505); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
-.auth-box { text-align: center; padding: 30px; max-width: 400px; width: 90%; }
-.auth-logo { font-size: 36px; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.auth-desc { color: #888; font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
-.google-btn { background: white; color: black; border: none; padding: 14px 28px; font-size: 15px; font-weight: bold; border-radius: 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
+/* AUTH SCREEN */
+#authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle, #1a1a1a, #000); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+.auth-box { text-align: center; padding: 25px; max-width: 340px; width: 85%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; backdrop-filter: blur(25px); }
+.auth-logo { font-size: 30px; font-weight: 900; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+.auth-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: white; margin-bottom: 12px; font-size: 14px; outline: none; }
+.action-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
+.login-btn { background: linear-gradient(45deg, #ffaa00, #ff5500); color: white; width: 100%; }
+.signup-btn { background: transparent; color: #ffaa00; border: 1px solid rgba(255,170,0,0.4); margin-top: 10px; width: 100%; }
 
-/* MAIN APP */
-#appContent { display: none; }
-#top { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; }
-.brand { font-weight: 900; font-size: 22px; background: linear-gradient(45deg, #ffaa00, #ff5500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.user-profile { display: flex; align-items: center; gap: 10px; }
-.profile-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffaa00; object-fit: cover; }
-.btn-group { display: flex; gap: 12px; align-items: center; }
-.logout-btn { background: rgba(255,255,255,0.12); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; font-weight: bold; }
+/* APP LAYOUT */
+#appContent { display: none; height: 100vh; width: 100vw; position: relative; }
+#top { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 100; }
+.brand { font-weight: 900; font-size: 18px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.btn-group { display: flex; gap: 8px; }
+.upload-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; }
+.upload-btn.export-btn { background: linear-gradient(45deg, #00fff2, #0066ff); border: none; color: black; font-weight: 900; }
 
-/* REELS PLAYER */
-#reelsContainer { width: 100%; height: 100vh; scroll-snap-type: y mandatory; overflow-y: scroll; scrollbar-width: none; }
-#reelsContainer::-webkit-scrollbar { display: none; }
-.reel { width: 100%; height: 100vh; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
-.video-wrapper { width: 100%; height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-video { width: 100%; height: 100vh; object-fit: cover; }
+/* REELS CONTAINER (53vh) */
+#reelsContainer { width: 100%; height: 53vh; position: absolute; top: 0; left: 0; background: #000; touch-action: none; }
+.reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
+.video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+video { width: 100%; height: 100%; object-fit: cover; }
 
-/* OVERLAYS */
-.creator-details { position: absolute; bottom: 46vh; left: 15px; right: 80px; z-index: 15; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.creator-user { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
-.creator-img { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid white; object-fit: cover; }
-.subtitle-text { color: #f0f0f0; font-size: 14px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); line-height: 1.4; }
+/* PROGRESS & ICONS */
+.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
+.progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
+.play-indicator { position: absolute; font-size: 50px; color: rgba(255,255,255,0.7); z-index: 30; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+.floating-heart { position: absolute; font-size: 80px; color: #ff0055; z-index: 100; pointer-events: none; animation: floatUp 1s ease-out forwards; opacity: 0; }
+@keyframes floatUp { 0% { transform: scale(0) translateY(0); opacity: 1; } 50% { transform: scale(1.2) translateY(-50px); opacity: 1; } 100% { transform: scale(1) translateY(-100px); opacity: 0; } }
 
-.social-engagement { position: absolute; right: 15px; bottom: 46vh; display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 20; }
+/* CINEMATIC OVERLAYS */
+.vignette-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.95) 98%); pointer-events: none; z-index: 2; display: none; }
+.grain-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.08; pointer-events: none; z-index: 3; display: none; }
+.letterbox-overlay { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; z-index: 4; display: none; }
+.letterbox-overlay::before, .letterbox-overlay::after { content: ''; width: 100%; height: 4vh; background: black; }
+.vhs-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px); pointer-events:none; z-index:5; display:none; }
+.lightleak-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(45deg, rgba(255,85,0,0.25), transparent 50%, rgba(0,255,242,0.15)); pointer-events:none; z-index:6; mix-blend-mode: screen; display:none; }
+
+/* DETAILS & SOCIALS */
+.info-overlay-layer { position: absolute; bottom: 15px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 4px; }
+.uploader-profile-name { font-size: 14px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 3px #000; }
+.subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 6px; display: inline-block; border-left: 3px solid #ffaa00; }
+.audio-name-tag { font-size: 11px; color: #ffaa00; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+
+.social-engagement { position: absolute; right: 12px; bottom: 15px; display: flex; flex-direction: column; gap: 12px; z-index: 20; align-items: center; }
 .engage-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.engage-icon { width: 48px; height: 48px; background: rgba(25, 25, 25, 0.65); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; backdrop-filter: blur(15px); }
-.engage-item span { font-size: 12px; margin-top: 5px; font-weight: bold; text-shadow: 1px 1px 3px black; }
+.engage-icon { width: 38px; height: 38px; background: rgba(15,15,15,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; backdrop-filter: blur(10px); }
+.engage-item span { font-size: 11px; margin-top: 2px; font-weight: 600; text-shadow: 1px 1px 2px #000; }
 
 /* BOTTOM PANEL */
-#panel { position: fixed; bottom: 0; left: 0; right: 0; height: 43vh; background: rgba(10, 10, 10, 0.96); backdrop-filter: blur(50px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 90; padding: 22px; border-radius: 30px 30px 0 0; }
-.caption-input { width: 100%; padding: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: white; margin-top: 10px; font-size: 14px; }
-.caption-input:focus { outline: none; border-color: #ffaa00; }
-.upload-btn { background: linear-gradient(45deg, #ffaa00, #ff5500); color: white; border: none; padding: 15px; border-radius: 25px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 170, 0, 0.4); width: 100%; margin-top: 20px; }
-.upload-btn:disabled { background: #444; box-shadow: none; cursor: not-allowed; }
+#panel { position: absolute; bottom: 0; left: 0; right: 0; height: 47vh; background: #0c0c0e; border-top: 1px solid rgba(255,255,255,0.08); z-index: 90; padding: 12px; display: flex; flex-direction: column; border-radius: 16px 16px 0 0; }
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 8px 14px; background: rgba(255,255,255,0.03); border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; color: #888; white-space: nowrap; }
+.tab.active { background: linear-gradient(45deg, #ffaa00, #ff5500); color: #000; }
+
+.audio-search-bar { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: white; font-size: 13px; outline: none; margin-bottom: 12px; }
+.audio-search-bar:focus { border-color: #ffaa00; background: rgba(255,255,255,0.1); }
+
+.grid-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; overflow-y: auto; flex-grow: 1; padding-bottom: 8px; }
+.item-btn { padding: 12px 4px; font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: #cfcfcf; border-radius: 8px; cursor: pointer; text-align: center; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.item-btn.selected { background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none; box-shadow: 0 0 10px rgba(255,170,0,0.5); }
+
+.slider-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; padding: 5px; }
+.slider-group { display: flex; flex-direction: column; gap: 3px; }
+.slider-group label { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; }
+input[type=range] { width: 100%; accent-color: #ffaa00; }
+.caption-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; }
+
+/* ಮ್ಯೂಸಿಕ್ ಲಿಸ್ಟ್ UI ಡಿಸೈನ್ */
+.audio-section-wrapper { display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-bottom: 10px; }
+.music-title-heading { font-size: 12px; font-weight: bold; color: #888; margin: 8px 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.playlist-scroll-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin-bottom: 15px; padding-bottom: 2px; flex-shrink: 0; }
+.playlist-scroll-row::-webkit-scrollbar { display: none; }
+.playlist-card { flex: 0 0 100px; text-align: center; cursor: pointer; }
+.playlist-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+.playlist-card p { font-size: 11px; font-weight: 600; margin-top: 4px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.songs-vertical-list { display: flex; flex-direction: column; gap: 12px; }
+.song-list-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); transition: background 0.2s; cursor: pointer; }
+.song-list-item.active-song { background: rgba(255, 170, 0, 0.1); border-color: rgba(255, 170, 0, 0.3); }
+.song-left-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; pointer-events: none; }
+.song-poster { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; background: #222; flex-shrink: 0; }
+.song-meta-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.song-display-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-artist-sub { font-size: 11px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-play-btn-circle { width: 32px; height: 32px; background: rgba(255,255,255,0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; border: none; color: white; flex-shrink: 0; pointer-events: none; }
+.song-list-item.active-song .song-play-btn-circle { background: #ffaa00; color: #000; font-weight: bold; }
+
+/* FX KEYFRAMES */
+.fx-zoom-1 { animation: z1 6s infinite alternate ease-in-out; } .fx-zoom-3 { animation: z3 2s infinite linear; }
+.fx-pan-l { animation: pl 5s infinite alternate; } .fx-shake-h { animation: sh3 0.08s infinite linear; }
+.fx-bounce-1 { animation: b1 0.4s infinite ease-in-out; } .fx-glitch-1 { animation: g1 0.3s infinite; }
+.fx-whip-h { animation: wh 3s infinite; } .fx-pulse { animation: pulse 1s infinite alternate ease-in-out; }
+.fx-flash { animation: flash 0.4s infinite; } .fx-spin { animation: spin 5s infinite linear; }
+.fx-swing { animation: swing 2s infinite ease-in-out; } .fx-elastic { animation: elastic 1.5s infinite; }
+.fx-flip { animation: flip 3s infinite ease-in-out; }
+
+@keyframes z1 { 0%{transform:scale(1);} 100%{transform:scale(1.25);} } @keyframes z3 { 0%{transform:scale(1);} 100%{transform:scale(1.8);} }
+@keyframes pl { 0%{transform:scale(1.2) translateX(-5%);} 100%{transform:scale(1.2) translateX(5%);} } @keyframes sh3 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-6px,5px) rotate(1deg);} }
+@keyframes b1 { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} } @keyframes g1 { 0%{transform:translate(0);filter:hue-rotate(0deg);} 50%{transform:translate(-2px,2px);filter:hue-rotate(90deg);} 100%{transform:translate(0);} }
+@keyframes wh { 0%,100%{transform:translateX(0);filter:blur(0);} 45%{transform:translateX(-50%);filter:blur(4px);} 50%{transform:translateX(50%);} }
+@keyframes pulse { 0% { transform: scale(1); filter: brightness(100%); } 100% { transform: scale(1.15); filter: brightness(140%); } }
+@keyframes flash { 0%, 100% { filter: brightness(100%) contrast(100%); } 50% { filter: brightness(250%) contrast(150%); } }
+@keyframes spin { 0% { transform: rotate(0deg) scale(1.5); } 100% { transform: rotate(360deg) scale(1.5); } }
+@keyframes swing { 0%, 100% { transform: rotate(-8deg) scale(1.2); } 50% { transform: rotate(8deg) scale(1.2); } }
+@keyframes elastic { 0%, 100% { transform: scale(1); } 30% { transform: scaleX(1.25) scaleY(0.75); } 40% { transform: scaleX(0.75) scaleY(1.25); } 50% { transform: scaleX(1.15) scaleY(0.85); } 65% { transform: scaleX(0.95) scaleY(1.05); } 75% { transform: scaleX(1.05) scaleY(0.95); } }
+@keyframes flip { 0% { transform: perspective(600px) rotateY(0) scale(1.2); } 100% { transform: perspective(600px) rotateY(360deg) scale(1.2); } }
 </style>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
-  import { getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
-  // ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ನಿಂದ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾದ ಅಸಲಿ ಕಾನ್ಫಿಗರೇಶನ್ ಕೋಡ್
   const firebaseConfig = {
     apiKey: "AIzaSyBQ7V6w17s3EUR8n6KR-EZgMmRBQxAFhpM",
     authDomain: "hudkoreels-22c3d.firebaseapp.com",
-    databaseURL: "https://hudkoreels-22c3d-default-rtdb.firebaseio.com",
     projectId: "hudkoreels-22c3d",
     storageBucket: "hudkoreels-22c3d.firebasestorage.app",
     messagingSenderId: "942258546722",
@@ -72,170 +140,437 @@ video { width: 100%; height: 100vh; object-fit: cover; }
   const db = getFirestore(app);
   const storage = getStorage(app);
   const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
 
+  let globalReelsFeed = []; 
+  let currentFeedIndex = 0;
   let currentUser = null;
+  
+  let currentLUT = 'f-none';
+  let currentMotion = '';
+  let currentSpeed = 1.0; 
+  let overlaySettings = { vignette: false, grain: false, letterbox: false, vhs: false, lightleak: false };
+  let gradingSettings = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, invert: 0 };
+  
+  let activeLocalVideoFile = null;
+  let selectedAudioUrl = "";
+  let selectedAudioName = "Original Sound";
+  let audioSearchQuery = ""; 
+  let searchTimeout = null;
 
-  // Google Login Trigger
-  window.loginWithGoogle = async () => {
-      try {
-          await signInWithRedirect(auth, provider);
-      } catch (err) {
-          alert("ಲಾಗಿನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
-      }
+  const bgmAudioPlayer = document.getElementById("bgmAudio");
+  const activeVid = document.getElementById("v");
+  const progressBar = document.getElementById("progressBar");
+
+  const KANNADA_PLAYLISTS = [
+      { name: "KGF Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=KGF" },
+      { name: "Yash Mass", img: "https://api.dicebear.com/7.x/initials/svg?seed=Yash" },
+      { name: "Trending", img: "https://api.dicebear.com/7.x/initials/svg?seed=Trend" },
+      { name: "Darshan Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=DBoss" }
+  ];
+
+  // 🎵 ಬೃಹತ್ ಜ್ಯೂಸ್‌ಫುಲ್ ಒರಿಜಿನಲ್ ಕನ್ನಡ ಹಾಡುಗಳ ಲಿಸ್ಟ್ (High Quality ಸ್ಟ್ರೀಮಿಂಗ್ ಸರ್ವರ್ಸ್)
+  const KANNADA_AUDIO_TRACKS = [
+      { name: "Toofan (KGF Chapter 2)", artist: "Santhosh Venky, Ravi Basrur", img: "https://api.dicebear.com/7.x/initials/svg?seed=Toofan", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Toofan%20KGF%202%20Kannada.mp3" },
+      { name: "Salaam Rocky Bhai (KGF 1)", artist: "Vijay Prakash, Ravi Basrur", img: "https://api.dicebear.com/7.x/initials/svg?seed=Rocky", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Salaam%20Rocky%20Bhai.mp3" },
+      { name: "Sulthana (KGF Chapter 2)", artist: "Ravi Basrur & Crew", img: "https://api.dicebear.com/7.x/initials/svg?seed=Sulthana", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Sulthana%20KGF%202.mp3" },
+      { name: "Salaar Rebel Anthem", artist: "Vijay Prakash", img: "https://api.dicebear.com/7.x/initials/svg?seed=Salaar", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Salaar%20Rebel%20Anthem%20Kannada.mp3" },
+      { name: "Varaha Roopam (Kantara)", artist: "Sai Vignesh", img: "https://api.dicebear.com/7.x/initials/svg?seed=Kantara", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Varaha%20Roopam%20Kantara.mp3" },
+      { name: "Yuva Title Track", artist: "Nakash Aziz, Ajaneesh", img: "https://api.dicebear.com/7.x/initials/svg?seed=Yuva", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Yuva%20Title%20Track.mp3" },
+      { name: "Dheera Dheera (KGF 1)", artist: "Ananya Bhat", img: "https://api.dicebear.com/7.x/initials/svg?seed=Dheera", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+      { name: "Mehaboba (KGF Chapter 2)", artist: "Ananya Bhat", img: "https://api.dicebear.com/7.x/initials/svg?seed=Mehaboba", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+      { name: "Garbadhi (KGF Chapter 1)", artist: "Ananya Bhat", img: "https://api.dicebear.com/7.x/initials/svg?seed=Garbadhi", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+      { name: "Kranti - Dharani Mandalada", artist: "Pancham Jeeva", img: "https://api.dicebear.com/7.x/initials/svg?seed=Kranti", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+  ];
+
+  const LUT_PRESETS = {
+      'f-none': '', 'f-oppenheimer': 'contrast(160%) brightness(75%) grayscale(0.2)', 'f-cyberpunk': 'hue-rotate(140deg) saturate(2.5)',
+      'f-interstellar': 'contrast(120%) brightness(85%) saturate(70%)', 'f-matrix': 'hue-rotate(55deg) saturate(1.4) contrast(1.4)',
+      'f-dune': 'sepia(0.4) contrast(1.3) brightness(85%)', 'f-kgf-gold': 'sepia(0.6) contrast(175%) brightness(75%)',
+      'f-kantara': 'saturate(1.8) contrast(140%) brightness(75%)', 'f-noir': 'grayscale(1) contrast(180%)',
+      'f-salar-dark': 'brightness(60%) contrast(190%) grayscale(0.4)'
   };
 
-  // Logout Trigger
-  window.logoutApp = () => {
-      if(confirm("ಖಂಡಿತ ಲಾಗ್ ಔಟ್ ಮಾಡಬೇಕೇ?")) {
-          signOut(auth);
-      }
+  const MOTION_PRESETS = [
+      { id: '', name: 'RAW ✖️' }, { id: 'fx-zoom-1', name: 'SLOW ZOOM 🔎' }, { id: 'fx-zoom-3', name: 'MEGA ZOOM 🚀' },
+      { id: 'fx-pan-l', name: 'PAN LEFT ➡️' }, { id: 'fx-shake-h', name: 'HARD SHAKE 🌋' }, { id: 'fx-bounce-1', name: 'BASS BOUNCE 🔊' }, 
+      { id: 'fx-glitch-1', name: 'GLITCH V1 👾' }, { id: 'fx-whip-h', name: 'WHIP HORIZ 💫' },
+      { id: 'fx-pulse', name: 'BEAT PULSE 💓' }, { id: 'fx-flash', name: 'STROBE FLASH ⚡' }
+  ];
+
+  const SPEED_PRESETS = [
+      { id: 0.25, name: 'EPIC SLO (0.25x)' }, { id: 0.5, name: 'SLO-MO (0.5x)' }, { id: 1.0, name: 'NORMAL (1x)' }, { id: 2.0, name: 'RUSH (2x)' }
+  ];
+
+  window.loginWithEmail = async () => {
+      let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
+      try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert(err.message); }
   };
+  window.signUpWithEmail = async () => {
+      let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
+      try { await createUserWithEmailAndPassword(auth, email, pass); alert("ಅಕೌಂಟ್ ರೆಡಿಯಾಗಿದೆ!"); } catch (err) { alert(err.message); }
+  };
+  window.logoutApp = () => signOut(auth);
 
-  // Handle Redirect Result
-  getRedirectResult(auth).catch((err) => {
-      console.error("Redirect Auth Error:", err);
-  });
-
-  // Auth State Listener
   onAuthStateChanged(auth, (user) => {
-      if (user) {
-          currentUser = user;
-          document.getElementById("authScreen").style.display = "none";
-          document.getElementById("appContent").style.display = "block";
-          document.getElementById("navUserPic").src = user.photoURL || "https://via.placeholder.com/150";
-          document.getElementById("navUserName").innerText = user.displayName.split(" ")[0];
-          loadLiveReels();
-      } else {
-          currentUser = null;
-          document.getElementById("authScreen").style.display = "flex";
-          document.getElementById("appContent").style.display = "none";
-      }
+      if (user) { currentUser = user; document.getElementById("authScreen").style.display = "none"; document.getElementById("appContent").style.display = "block"; loadGlobalReelsFeed(); switchTab('lut'); } 
+      else { currentUser = null; document.getElementById("authScreen").style.display = "flex"; document.getElementById("appContent").style.display = "none"; }
   });
 
-  // Load Reels Live
-  function loadLiveReels() {
-      const q = query(collection(db, "reels"), orderBy("timestamp", "desc"));
-      onSnapshot(q, (snapshot) => {
-          let container = document.getElementById("reelsContainer");
-          container.innerHTML = "";
-          
-          if(snapshot.empty) {
-              container.innerHTML = `<div class="reel"><h3 style='color: #666; text-align:center; padding:20px;'>ಯಾವುದೇ ವಿಡಿಯೋ ಲೈವ್ ಇಲ್ಲ.<br>ಮೊದಲ ವಿಡಿಯೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ! ✨</h3></div>`;
-              return;
-          }
+  async function loadGlobalReelsFeed() {
+      try {
+          const q = query(collection(db, "reels"), orderBy("timestamp", "desc"));
+          const querySnapshot = await getDocs(q);
+          globalReelsFeed = []; querySnapshot.forEach((doc) => { let data = doc.data(); data.id = doc.id; globalReelsFeed.push(data); });
+          if(globalReelsFeed.length > 0) renderReelFromFeed(globalReelsFeed[currentFeedIndex]);
+      } catch (err) { console.error(err); }
+  }
 
-          snapshot.forEach((docSnap) => {
-              let data = docSnap.data();
-              let id = docSnap.id;
-              let reelDiv = document.createElement("div");
-              reelDiv.className = "reel";
-              reelDiv.innerHTML = `
-                  <div class="video-wrapper">
-                      <div class="creator-details">
-                          <div class="creator-user">
-                              <img class="creator-img" src="${data.creatorPic || 'https://via.placeholder.com/150'}">
-                              <span>@${data.creatorName || 'creator'}</span>
-                          </div>
-                          <span class="subtitle-text">${data.subtitle || ''}</span>
-                      </div>
-                      <div class="social-engagement">
-                          <div class="engage-item" onclick="window.likeVideo('${id}', ${data.likes || 0})">
-                              <div class="engage-icon">❤️</div>
-                              <span>${data.likes || 0}</span>
-                          </div>
-                      </div>
-                      <video loop muted autoplay playsinline src="${data.url}" onclick="if(this.paused) this.play(); else this.pause();"></video>
-                  </div>
-              `;
-              container.appendChild(reelDiv);
+  function renderReelFromFeed(reelData) {
+      if(!reelData) return;
+      activeVid.src = reelData.url;
+      
+      document.getElementById("uploader-tag").innerText = reelData.uploader ? `@${reelData.uploader}` : "@anonymous";
+      document.getElementById("caption-box").innerText = reelData.subtitle || "...";
+      document.getElementById("audio-tag").innerText = "🎵 " + (reelData.audioTrackName || "Original Sound");
+
+      if(reelData.audioTrackUrl) { bgmAudioPlayer.src = reelData.audioTrackUrl; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play().catch(()=>{}); activeVid.muted = true; } 
+      else { bgmAudioPlayer.pause(); activeVid.muted = false; }
+      
+      activeVid.className = reelData.motionClass || "";
+      activeVid.playbackRate = reelData.speed || 1.0;
+
+      let baseLutString = LUT_PRESETS[reelData.lutPreset] || "";
+      let sliderString = `brightness(${reelData.bright || 100}%) contrast(${reelData.cont || 100}%) saturate(${reelData.sat || 100}%) hue-rotate(${reelData.hue || 0}deg) blur(${reelData.blur || 0}px) invert(${reelData.invert || 0})`;
+      activeVid.style.filter = `${baseLutString} ${sliderString}`.trim();
+
+      document.getElementById("vignette").style.display = reelData.vignetteOn ? "block" : "none";
+      document.getElementById("grain").style.display = reelData.grainOn ? "block" : "none";
+      document.getElementById("letterbox").style.display = reelData.letterboxOn ? "block" : "none";
+      document.getElementById("vhs").style.display = reelData.vhsOn ? "block" : "none";
+      document.getElementById("lightleak").style.display = reelData.lightleakOn ? "block" : "none";
+      
+      document.getElementById("count-like").innerText = reelData.likes ? reelData.likes.length : "0";
+      document.getElementById("count-comment").innerText = reelData.comments ? reelData.comments.length : "0";
+      activeVid.play().catch(()=>{});
+  }
+
+  let lastTapTime = 0; let touchstartY = 0, touchendY = 0;
+  const reelsContainer = document.getElementById('reelsContainer');
+
+  reelsContainer.addEventListener('touchstart', e => { touchstartY = e.changedTouches[0].screenY; });
+  reelsContainer.addEventListener('touchend', e => {
+      touchendY = e.changedTouches[0].screenY;
+      let currentTime = new Date().getTime(); let tapLength = currentTime - lastTapTime;
+
+      if (Math.abs(touchendY - touchstartY) > 40) {
+          if (globalReelsFeed.length === 0) return;
+          if (touchendY < touchstartY) { currentFeedIndex = (currentFeedIndex + 1) % globalReelsFeed.length; renderReelFromFeed(globalReelsFeed[currentFeedIndex]); }
+          else { currentFeedIndex = (currentFeedIndex - 1 + globalReelsFeed.length) % globalReelsFeed.length; renderReelFromFeed(globalReelsFeed[currentFeedIndex]); }
+          lastTapTime = 0; return;
+      }
+      if (tapLength < 300 && tapLength > 0) {
+          triggerSocialAction('like'); showFloatingHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY); e.preventDefault();
+      } else {
+          setTimeout(() => { if (currentTime - lastTapTime >= 300 && Math.abs(touchendY - touchstartY) < 10) togglePlayPause(); }, 300);
+      }
+      lastTapTime = currentTime;
+  });
+
+  function togglePlayPause() {
+      let indicator = document.getElementById("playIndicator");
+      if(activeVid.paused) { activeVid.play(); bgmAudioPlayer.play().catch(()=>{}); indicator.innerText = "▶️"; } 
+      else { activeVid.pause(); bgmAudioPlayer.pause(); indicator.innerText = "⏸️"; }
+      indicator.style.opacity = "1"; setTimeout(() => { indicator.style.opacity = "0"; }, 600);
+  }
+
+  function showFloatingHeart(x, y) {
+      let heart = document.createElement("div"); heart.className = "floating-heart"; heart.innerText = "❤️";
+      heart.style.left = (x - 40) + "px"; heart.style.top = (y - 40) + "px";
+      document.body.appendChild(heart); setTimeout(() => heart.remove(), 1000);
+  }
+
+  activeVid.addEventListener('timeupdate', () => {
+      if(!activeVid.duration) return; let progress = (activeVid.currentTime / activeVid.duration) * 100;
+      progressBar.style.width = progress + "%";
+  });
+
+  window.triggerSocialAction = async (action) => {
+      if(globalReelsFeed.length === 0) return;
+      let currentReel = globalReelsFeed[currentFeedIndex]; const reelRef = doc(db, "reels", currentReel.id);
+      if (action === 'like') {
+          await updateDoc(reelRef, { likes: arrayUnion(currentUser ? currentUser.email : "guest") });
+          document.getElementById("count-like").innerText = parseInt(document.getElementById("count-like").innerText) + 1;
+      } else if (action === 'comment') {
+          let commentText = prompt("ನಿಮ್ಮ ಕಾಮೆಂಟ್:"); if(!commentText) return;
+          await updateDoc(reelRef, { comments: arrayUnion({ user: currentUser.email, text: commentText }) });
+          document.getElementById("count-comment").innerText = parseInt(document.getElementById("count-comment").innerText) + 1;
+      } else if (action === 'share') { navigator.clipboard.writeText(currentReel.url); alert("✈️ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!"); }
+  };
+
+  document.getElementById("fileInput").addEventListener("change", function() {
+      let file = this.files[0]; if(!file) return; activeLocalVideoFile = file;
+      bgmAudioPlayer.pause(); activeVid.src = URL.createObjectURL(file); activeVid.muted = false; activeVid.play();
+  });
+
+  window.exportCinematicVideo = async () => {
+      if(!activeLocalVideoFile) return alert("ಮೊದಲು ವಿಡಿಯೋ ಸೆಲೆಕ್ಟ್ ಮಾಡಿ!");
+      let expBtn = document.querySelector(".export-btn"); expBtn.innerText = "⏳ Uploading...";
+      try {
+          let storageRef = ref(storage, 'reels/' + Date.now() + '_' + activeLocalVideoFile.name);
+          let snap = await uploadBytes(storageRef, activeLocalVideoFile); let downloadUrl = await getDownloadURL(snap.ref);
+          
+          await addDoc(collection(db, "reels"), {
+              url: downloadUrl, uploader: currentUser ? currentUser.email.split('@')[0] : "user",
+              subtitle: document.getElementById("caption-box").innerText, audioTrackUrl: selectedAudioUrl, audioTrackName: selectedAudioName,
+              lutPreset: currentLUT, motionClass: currentMotion, speed: currentSpeed,
+              vignetteOn: overlaySettings.vignette, grainOn: overlaySettings.grain, letterboxOn: overlaySettings.letterbox, 
+              vhsOn: overlaySettings.vhs, lightleakOn: overlaySettings.lightleak,
+              bright: gradingSettings.brightness, cont: gradingSettings.contrast, sat: gradingSettings.saturate,
+              hue: gradingSettings.hueRotate, blur: gradingSettings.blur, invert: gradingSettings.invert,
+              likes: [], comments: [], timestamp: Date.now()
           });
+          alert("💥 ರೀಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್ಲೋಡ್ ಆಗಿದೆ!"); loadGlobalReelsFeed();
+      } catch (err) { alert(err.message); } finally { expBtn.innerText = "⚡ Export"; }
+  };
+
+  window.switchTab = (tab) => {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.getElementById(`tab-${tab}`).classList.add("active"); renderTools(tab);
+  };
+
+  function renderTools(type) {
+      let content = document.getElementById("content"); content.innerHTML = "";
+      
+      if (type === "lut") {
+          content.className = "grid-content";
+          Object.keys(LUT_PRESETS).forEach(key => {
+              let b = document.createElement("button"); b.className = `item-btn ${currentLUT === key ? 'selected' : ''}`;
+              b.innerText = key.replace('f-', '').toUpperCase();
+              b.onclick = () => { currentLUT = key; applyMasterCinematicEngine(); renderTools('lut'); };
+              content.appendChild(b);
+          });
+      } 
+      else if (type === "motion") {
+          content.className = "grid-content";
+          MOTION_PRESETS.forEach(m => {
+              let b = document.createElement("button"); b.className = `item-btn ${currentMotion === m.id ? 'selected' : ''}`;
+              b.innerText = m.name;
+              b.onclick = () => { currentMotion = m.id; applyMasterCinematicEngine(); renderTools('motion'); };
+              content.appendChild(b);
+          });
+      }
+      else if (type === "speed") {
+          content.className = "grid-content";
+          SPEED_PRESETS.forEach(s => {
+              let b = document.createElement("button"); b.className = `item-btn ${currentSpeed === s.id ? 'selected' : ''}`;
+              b.innerText = s.name;
+              b.onclick = () => { currentSpeed = s.id; activeVid.playbackRate = s.id; renderTools('speed'); };
+              content.appendChild(b);
+          });
+      }
+      else if (type === "audio") {
+          content.className = "audio-section-wrapper"; 
+          
+          let searchInput = document.createElement("input"); searchInput.type = "text"; searchInput.className = "audio-search-bar";
+          searchInput.placeholder = "🔍 Search artists and sounds"; searchInput.value = audioSearchQuery;
+          searchInput.oninput = function() {
+              audioSearchQuery = this.value.toLowerCase(); clearTimeout(searchTimeout);
+              searchTimeout = setTimeout(() => { renderFilteredAudioList(audioSearchQuery); }, 250);
+          };
+          content.appendChild(searchInput);
+
+          let plTitle = document.createElement("div"); plTitle.className = "music-title-heading"; plTitle.innerText = "Playlists";
+          content.appendChild(plTitle);
+
+          let plRow = document.createElement("div"); plRow.className = "playlist-scroll-row";
+          KANNADA_PLAYLISTS.forEach(p => {
+              let pCard = document.createElement("div"); pCard.className = "playlist-card";
+              pCard.innerHTML = `<img src="${p.img}"><p>${p.name}</p>`;
+              pCard.onclick = () => { searchInput.value = p.name; audioSearchQuery = p.name.toLowerCase(); renderFilteredAudioList(audioSearchQuery); };
+              plRow.appendChild(pCard);
+          });
+          content.appendChild(plRow);
+
+          let popTitle = document.createElement("div"); popTitle.className = "music-title-heading"; popTitle.innerText = "Popular Hits";
+          content.appendChild(popTitle);
+
+          let listWrapper = document.createElement("div"); listWrapper.id = "audioListWrapper"; listWrapper.className = "songs-vertical-list";
+          content.appendChild(listWrapper); 
+          
+          renderFilteredAudioList(audioSearchQuery);
+      }
+      else if (type === "color") {
+          content.className = "slider-container";
+          let controls = [
+              { id: 'brightness', label: 'BRIGHTNESS', min: 20, max: 200, unit: '%' },
+              { id: 'contrast', label: 'CONTRAST', min: 20, max: 250, unit: '%' },
+              { id: 'saturate', label: 'SATURATION', min: 0, max: 400, unit: '%' },
+              { id: 'hueRotate', label: 'HUE TINT', min: 0, max: 360, unit: 'deg' }
+          ];
+          controls.forEach(c => {
+              let div = document.createElement("div"); div.className = "slider-group";
+              div.innerHTML = `<label><span>${c.label}</span><span id="v-${c.id}">${gradingSettings[c.id]}${c.unit}</span></label>
+                               <input type="range" min="${c.min}" max="${c.max}" value="${gradingSettings[c.id]}">`;
+              div.querySelector("input").oninput = function() { gradingSettings[c.id] = this.value; document.getElementById(`v-${c.id}`).innerText = this.value + c.unit; applyMasterCinematicEngine(); };
+              content.appendChild(div);
+          });
+      }
+      else if (type === "subtitle") {
+          content.className = "slider-container";
+          let input = document.createElement("input"); input.type = "text"; input.className = "caption-input";
+          input.placeholder = "ಡೈಲಾಗ್ ಸಬ್‌ಟೈಟಲ್ ಇಲ್ಲಿ ಬರೆಯಿರಿ...";
+          input.oninput = function() { document.getElementById("caption-box").innerText = this.value || "..."; };
+          content.appendChild(input);
+      }
+      else if (type === "overlay") {
+          content.className = "grid-content";
+          let overlays = [
+              { id: 'vignette', name: 'VIGNETTE 🌑' }, { id: 'grain', name: 'GRAIN 🌫️' }, { id: 'letterbox', name: 'CINEMA BARS 🎞️' },
+              { id: 'vhs', name: '90s VHS 📼' }, { id: 'lightleak', name: 'LIGHT LEAK ✨' }
+          ];
+          overlays.forEach(o => {
+              let b = document.createElement("button"); b.className = `item-btn ${overlaySettings[o.id] ? 'selected' : ''}`;
+              b.innerText = o.name;
+              b.onclick = () => { overlaySettings[o.id] = !overlaySettings[o.id]; applyMasterCinematicEngine(); renderTools('overlay'); };
+              content.appendChild(b);
+          });
+      }
+  }
+
+  // ⚡ ಫಿಕ್ಸ್ಡ್ ಆಡಿಯೋ ಪ್ಲೇಯರ್ ಎಂಜಿನ್ (ಬ್ರೌಸರ್ ಬ್ಲಾಕ್ ಬೈಪಾಸ್)
+  function renderFilteredAudioList(queryText) {
+      let wrapper = document.getElementById("audioListWrapper"); if(!wrapper) return; wrapper.innerHTML = "";
+      let filtered = KANNADA_AUDIO_TRACKS.filter(track => track.name.toLowerCase().includes(queryText) || track.artist.toLowerCase().includes(queryText));
+      
+      if(filtered.length === 0) { wrapper.innerHTML = "<div style='text-align:center; font-size:12px; color:#666; padding:20px;'>ಯಾವ ಹಾಡು ಸಿಗಲಿಲ್ಲ! ✖️</div>"; return; }
+      
+      filtered.forEach(track => {
+          let isSelected = selectedAudioUrl === track.url;
+          let item = document.createElement("div"); 
+          item.className = `song-list-item ${isSelected ? 'active-song' : ''}`;
+          
+          item.innerHTML = `
+              <div class="song-left-info">
+                  <img class="song-poster" src="${track.img}">
+                  <div class="song-meta-text">
+                      <span class="song-display-title">${track.name}</span>
+                      <span class="song-artist-sub">${track.artist}</span>
+                  </div>
+              </div>
+              <button class="song-play-btn-circle">${isSelected && !bgmAudioPlayer.paused ? '⏸' : '▶'}</button>
+          `;
+          
+          item.onclick = function() { 
+              // ಯೂಸರ್ ಇಂಟರಾಕ್ಷನ್ ಮೂಲಕ ಬ್ರೌಸರ್ ಆಡಿಯೋ ಬ್ಲಾಕ್ ತೆರವುಗೊಳಿಸುವುದು
+              if (selectedAudioUrl === track.url && !bgmAudioPlayer.paused) {
+                  bgmAudioPlayer.pause();
+              } else {
+                  selectedAudioUrl = track.url; 
+                  selectedAudioName = track.name; 
+                  
+                  bgmAudioPlayer.src = track.url; 
+                  bgmAudioPlayer.load(); // ಫೋರ್ಸ್ ಲೋಡ್
+                  
+                  let playPromise = bgmAudioPlayer.play();
+                  if (playPromise !== undefined) {
+                      playPromise.then(() => {
+                          if(activeVid) {
+                              activeVid.muted = true; 
+                              activeVid.currentTime = 0; 
+                              activeVid.play().catch(()=>{});
+                          }
+                      }).catch(error => {
+                          console.log("Autoplay blocked, trying fallback:", error);
+                      });
+                  }
+                  document.getElementById("audio-tag").innerText = "🎵 " + track.name;
+              }
+              renderFilteredAudioList(queryText);
+          };
+          wrapper.appendChild(item);
       });
   }
 
-  // Upload Video Logic
-  window.uploadFileToFirebase = async (file) => {
-      if(!file || !currentUser) return;
-      if (file.size > 30 * 1024 * 1024) {
-          alert("ವಿಡಿಯೋ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ! 30MB ಗಿಂತ ಕಡಿಮೆ ಇರೋ ವಿಡಿಯೋ ಹಾಕಿ.");
-          return;
-      }
-
-      let btn = document.getElementById("addBtn");
-      btn.innerText = "⚡ Uploading To Server...";
-      btn.disabled = true;
-
-      try {
-          let storageRef = ref(storage, 'reels/' + Date.now() + '_' + file.name);
-          let uploadSnap = await uploadBytes(storageRef, file);
-          let downloadUrl = await getDownloadURL(uploadSnap.ref);
-          let subText = document.getElementById("caption-box").value || "Hudko Reels 📲🔥";
-
-          await addDoc(collection(db, "reels"), {
-              url: downloadUrl,
-              subtitle: subText,
-              likes: 0,
-              creatorName: currentUser.displayName,
-              creatorPic: currentUser.photoURL,
-              creatorUid: currentUser.uid,
-              timestamp: Date.now()
-          });
-
-          alert("🔥 ಯೆಸ್! ನಿಮ್ಮ ವಿಡಿಯೋ ಯಶಸ್ವಿಯಾಗಿ ಲೈವ್ ಆಗಿದೆ!");
-          document.getElementById("caption-box").value = "";
-      } catch (err) {
-          console.error(err);
-          alert("ಅಪ್‌ಲೋಡ್ ಫೇಲ್ ಆಗಿದೆ. ದಯವಿಟ್ಟು Storage Rules ಪರಿಶೀಲಿಸಿ!");
-      } finally {
-          btn.innerText = "+ SELECT VIDEO & UPLOAD";
-          btn.disabled = false;
-      }
-  };
-
-  // Like System
-  window.likeVideo = async (id, currentLikes) => {
-      try {
-          const docRef = doc(db, "reels", id);
-          await updateDoc(docRef, { likes: currentLikes + 1 });
-      } catch (err) {
-          console.error(err);
-      }
-  };
+  function applyMasterCinematicEngine() {
+      let baseLutString = LUT_PRESETS[currentLUT] || '';
+      let sliderString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) blur(${gradingSettings.blur}px) invert(${gradingSettings.invert})`;
+      if(activeVid) { activeVid.className = currentMotion; activeVid.style.filter = `${baseLutString} ${sliderString}`.trim(); }
+      
+      document.getElementById("vignette").style.display = overlaySettings.vignette ? "block" : "none";
+      document.getElementById("grain").style.display = overlaySettings.grain ? "block" : "none";
+      document.getElementById("letterbox").style.display = overlaySettings.letterbox ? "block" : "none";
+      document.getElementById("vhs").style.display = overlaySettings.vhs ? "block" : "none";
+      document.getElementById("lightleak").style.display = overlaySettings.lightleak ? "block" : "none";
+  }
+  
+  // ಗ್ಲೋಬಲ್ ವಿಂಡೋ ಅಟ್ಯಾಚ್‌ಮೆಂಟ್ಸ್ (inline onclick ವರ್ಕಿಂಗ್ ಆಗಿರಲು)
+  window.switchTab = switchTab;
 </script>
 </head>
 <body>
 
+<audio id="bgmAudio" loop playsinline crossorigin="anonymous"></audio>
+
 <div id="authScreen">
     <div class="auth-box">
-        <div class="auth-logo">HUDKO REELS</div>
-        <div class="auth-desc">ಕ್ರಿಯೇಟರ್ಸ್ ಲೋಕಕ್ಕೆ ಸುಸ್ವಾಗತ. ಮುಂದುವರೆಯಲು ಗೂಗಲ್ ಖಾತೆಯಿಂದ ಲಾಗಿನ್ ಮಾಡಿ.</div>
-        <button class="google-btn" onclick="loginWithGoogle()">
-            <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/logo_googleg_color_24dp.png" width="20">
-            Sign in with Google
-        </button>
+        <div class="auth-logo">HUDKO REELS MAX</div>
+        <input type="email" id="emailInput" class="auth-input" placeholder="ಇಮೇಲ್" value="test@hudko.com">
+        <input type="password" id="passInput" class="auth-input" placeholder="ಪಾಸ್‌ವರ್ಡ್‌" value="123456">
+        <button class="action-btn login-btn" onclick="loginWithEmail()">LOG IN</button>
+        <button class="action-btn signup-btn" onclick="signUpWithEmail()">SIGN UP</button>
     </div>
 </div>
 
 <div id="appContent">
     <div id="top">
-      <h2 class="brand">🎬 HUDKO REELS</h2>
-      <div class="btn-group">
-          <div class="user-profile">
-              <img class="profile-pic" id="navUserPic" src="">
-              <span id="navUserName" style="font-size: 13px; font-weight: bold; color: #eee;"></span>
-          </div>
-          <button class="logout-btn" onclick="logoutApp()">Logout</button>
-      </div>
+        <h2 class="brand">🎬 HUDKO KANNADA</h2>
+        <div class="btn-group">
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">+ Video</button>
+            <button class="upload-btn export-btn" onclick="exportCinematicVideo()">⚡ Export</button>
+        </div>
+    </div>
+    <input type="file" id="fileInput" accept="video/*" hidden>
+
+    <div id="reelsContainer">
+        <div class="reel">
+            <div class="video-wrapper">
+                <div class="vignette-overlay" id="vignette"></div>
+                <div class="grain-overlay" id="grain"></div>
+                <div class="letterbox-overlay" id="letterbox"></div>
+                <div class="vhs-overlay" id="vhs"></div>
+                <div class="lightleak-overlay" id="lightleak"></div>
+                
+                <div class="play-indicator" id="playIndicator">⏸️</div>
+                
+                <div class="info-overlay-layer">
+                    <span class="uploader-profile-name" id="uploader-tag">@user</span>
+                    <span class="subtitle-text" id="caption-box">ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶</span>
+                    <span class="audio-name-tag" id="audio-tag">🎵 Original Sound</span>
+                </div>
+
+                <div class="social-engagement">
+                    <div class="engage-item" onclick="triggerSocialAction('like')"><div class="engage-icon">❤️</div><span id="count-like">0</span></div>
+                    <div class="engage-item" onclick="triggerSocialAction('comment')"><div class="engage-icon">💬</div><span id="count-comment">0</span></div>
+                    <div class="engage-item" onclick="triggerSocialAction('share')"><div class="engage-icon">✈️</div><span>Share</span></div>
+                </div>
+                <video id="v" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
     </div>
 
-    <input type="file" id="fileInput" accept="video/*" hidden onchange="uploadFileToFirebase(this.files[0])">
-    <div id="reelsContainer"></div>
-
     <div id="panel">
-        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #ffaa00; font-weight: 800;">🚀 Upload Dashboard</h3>
-        <label style="font-size: 12px; color: #aaa;">ವಿಡಿಯೋ ಕ್ಯಾಪ್ಷನ್ ಅಥವಾ ಹ್ಯಾಶ್‌ಟ್ಯಾಗ್ ಇಲ್ಲಿ ಬರೆಯಿರಿ:</label>
-        <input type="text" id="caption-box" class="caption-input" placeholder="ಕ್ಯಾಪ್ಷನ್ ಬರೆಯಿರಿ... ✍️">
-        <button class="upload-btn" id="addBtn" onclick="document.getElementById('fileInput').click()">+ SELECT VIDEO & UPLOAD</button>
+        <div class="tabs">
+            <div class="tab active" id="tab-lut" onclick="switchTab('lut')">📽️ Filters</div>
+            <div class="tab" id="tab-motion" onclick="switchTab('motion')">🌀 FX Magic</div>
+            <div class="tab" id="tab-overlay" onclick="switchTab('overlay')">🎭 Overlays</div>
+            <div class="tab" id="tab-speed" onclick="switchTab('speed')">⚡ Speed</div>
+            <div class="tab" id="tab-audio" onclick="switchTab('audio')">🎵 Music</div>
+            <div class="tab" id="tab-color" onclick="switchTab('color')">🎨 Adjust</div>
+            <div class="tab" id="tab-subtitle" onclick="switchTab('subtitle')">✍️ Text</div>
+            <div class="tab" style="color: #ff0055;" onclick="logoutApp()">✕</div>
+        </div>
+        <div id="content"></div>
     </div>
 </div>
 
