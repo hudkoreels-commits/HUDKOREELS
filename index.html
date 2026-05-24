@@ -470,18 +470,41 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if(!activeVid.duration) return; progressBar.style.width = ((activeVid.currentTime / activeVid.duration) * 100) + "%";
   });
 
-  window.triggerSocialAction = async (action) => {
+    window.triggerSocialAction = async (action) => {
       if(globalReelsFeed.length === 0) return;
-      let currentReel = globalReelsFeed[currentFeedIndex]; const reelRef = doc(db, "reels", currentReel.id);
+      let currentReel = globalReelsFeed[currentFeedIndex]; 
+      const reelRef = doc(db, "reels", currentReel.id);
+
       if (action === 'like') {
           await updateDoc(reelRef, { likes: arrayUnion(currentUser ? currentUser.email : "guest") });
           document.getElementById("count-like").innerText = parseInt(document.getElementById("count-like").innerText) + 1;
-      } else if (action === 'comment') {
-          let commentText = prompt("ನಿಮ್ಮ ಕಾಮೆಂಟ್:"); if(!commentText) return;
-          await updateDoc(reelRef, { comments: arrayUnion({ user: currentUser.email, text: commentText }) });
+      } 
+      else if (action === 'comment') {
+          let commentText = prompt("ನಿಮ್ಮ ಕಾಮೆಂಟ್:"); 
+          if(!commentText) return;
+          await updateDoc(reelRef, { comments: arrayUnion({ user: currentUser ? currentUser.email : "Guest", text: commentText }) });
           document.getElementById("count-comment").innerText = parseInt(document.getElementById("count-comment").innerText) + 1;
-      } else if (action === 'share') { navigator.clipboard.writeText(currentReel.url); alert("✈️ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!"); }
+      } 
+      else if (action === 'share') {
+          const shareData = {
+              title: 'Hudko Media Reels',
+              text: 'Hudko Studio ದಲ್ಲಿ ಎಡಿಟ್ ಮಾಡಿದ ಈ ವಿಡಿಯೋ ನೋಡಿ!',
+              url: currentReel.url
+          };
+
+          if (navigator.share) {
+              try {
+                  await navigator.share(shareData);
+              } catch (err) {
+                  console.error('Share error:', err);
+              }
+          } else {
+              navigator.clipboard.writeText(currentReel.url);
+              alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಈಗ ನೀವು ಎಲ್ಲಾದರೂ ಪೇಸ್ಟ್ ಮಾಡಬಹುದು.");
+          }
+      }
   };
+
 
   document.getElementById("fileInput").addEventListener("change", function() {
       let file = this.files[0]; if(!file) return; activeLocalVideoFile = file;
