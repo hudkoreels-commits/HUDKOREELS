@@ -3,86 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 HUDKO REELS STUDIO v8.0 - GOOGLE AUTH LIVES</title>
+<title>🎬 HUDKO REELS STUDIO v9.0 - FINAL PRODUCTION</title>
 
 <style>
 * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-body {
-    margin: 0; background: #020202; overflow: hidden; color: white; user-select: none;
-}
+body { margin: 0; background: #020202; overflow: hidden; color: white; user-select: none; }
 
-/* AUTH LOGIN SCREEN */
-#authScreen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-    background: radial-gradient(circle, #1a1a1a, #050505);
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    z-index: 1000; transition: 0.5s ease-out;
-}
+/* LOGIN SCREEN */
+#authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle, #1a1a1a, #050505); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
 .auth-box { text-align: center; padding: 30px; max-width: 400px; width: 90%; }
-.auth-logo { font-size: 32px; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.auth-desc { color: #888; font-size: 14px; margin-bottom: 30px; }
-.google-btn {
-    background: white; color: black; border: none; padding: 14px 24px;
-    font-size: 15px; font-weight: bold; border-radius: 30px; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(255,255,255,0.1);
-    transition: 0.2s;
-}
-.google-btn:hover { transform: scale(1.03); }
+.auth-logo { font-size: 36px; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.auth-desc { color: #888; font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+.google-btn { background: white; color: black; border: none; padding: 14px 28px; font-size: 15px; font-weight: bold; border-radius: 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 20px rgba(255,255,255,0.15); transition: 0.2s; }
+.google-btn:hover { transform: scale(1.02); }
 
-/* MAIN APP (HIDDEN UNTIL LOGIN) */
+/* MAIN APP */
 #appContent { display: none; }
-
-/* TOP NAVIGATION */
-#top {
-    position: fixed; top: 0; left: 0; right: 0; height: 70px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 0 20px; z-index: 100;
-}
-.brand { font-weight: 900; font-size: 20px; background: linear-gradient(45deg, #ffaa00, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+#top { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; }
+.brand { font-weight: 900; font-size: 22px; background: linear-gradient(45deg, #ffaa00, #ff5500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .user-profile { display: flex; align-items: center; gap: 10px; }
 .profile-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffaa00; object-fit: cover; }
+.btn-group { display: flex; gap: 12px; align-items: center; }
+.logout-btn { background: rgba(255,255,255,0.12); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; font-weight: bold; }
 
-.btn-group { display: flex; gap: 8px; align-items: center; }
-.upload-btn {
-    background: linear-gradient(45deg, #ffaa00, #ff5500); color: white; border: none;
-    padding: 10px 18px; border-radius: 25px; font-weight: bold; font-size: 12px; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 170, 0, 0.4);
-}
-.logout-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
-
-/* REELS CONTAINER */
+/* REELS PLAYER */
 #reelsContainer { width: 100%; height: 100vh; scroll-snap-type: y mandatory; overflow-y: scroll; scrollbar-width: none; }
 #reelsContainer::-webkit-scrollbar { display: none; }
 .reel { width: 100%; height: 100vh; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
 .video-wrapper { width: 100%; height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 video { width: 100%; height: 100vh; object-fit: cover; }
 
-/* REELS CREATOR DETAILS (INSTA STYLE) */
-.creator-details {
-    position: absolute; bottom: 46vh; left: 15px; right: 80px; z-index: 15;
-    display: flex; flex-direction: column; gap: 6px; pointer-events: none;
-}
-.creator-user { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 3px black; }
-.creator-img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid white; }
-.subtitle-text { color: #ffffff; font-size: 14px; text-shadow: 1px 1px 3px black; }
+/* OVERLAYS */
+.creator-details { position: absolute; bottom: 46vh; left: 15px; right: 80px; z-index: 15; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.creator-user { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
+.creator-img { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid white; object-fit: cover; }
+.subtitle-text { color: #f0f0f0; font-size: 14px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); line-height: 1.4; }
 
-/* ENGAGEMENT */
-.social-engagement { position: absolute; right: 15px; bottom: 46vh; display: flex; flex-direction: column; align-items: center; gap: 18px; z-index: 20; }
+.social-engagement { position: absolute; right: 15px; bottom: 46vh; display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 20; }
 .engage-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.engage-icon { width: 45px; height: 45px; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; backdrop-filter: blur(10px); }
-.engage-item span { font-size: 11px; margin-top: 4px; font-weight: bold; text-shadow: 1px 1px 3px black; }
+.engage-icon { width: 48px; height: 48px; background: rgba(25, 25, 25, 0.65); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; backdrop-filter: blur(15px); transition: 0.1s; }
+.engage-icon:active { transform: scale(0.85); }
+.engage-item span { font-size: 12px; margin-top: 5px; font-weight: bold; text-shadow: 1px 1px 3px black; }
 
-/* PANEL */
-#panel { position: fixed; bottom: 0; left: 0; right: 0; height: 43vh; background: rgba(6, 6, 6, 0.95); backdrop-filter: blur(40px); border-top: 1px solid rgba(255,255,255,0.08); z-index: 90; padding: 20px; border-radius: 30px 30px 0 0; }
-.caption-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; color: white; margin-top: 10px; }
+/* BOTTOM PANEL */
+#panel { position: fixed; bottom: 0; left: 0; right: 0; height: 43vh; background: rgba(10, 10, 10, 0.96); backdrop-filter: blur(50px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 90; padding: 22px; border-radius: 30px 30px 0 0; }
+.caption-input { width: 100%; padding: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: white; margin-top: 10px; font-size: 14px; }
+.caption-input:focus { outline: none; border-color: #ffaa00; }
+.upload-btn { background: linear-gradient(45deg, #ffaa00, #ff5500); color: white; border: none; padding: 15px; border-radius: 25px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 170, 0, 0.4); width: 100%; margin-top: 20px; transition: 0.2s; }
+.upload-btn:disabled { background: #444; box-shadow: none; cursor: not-allowed; }
 </style>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
   import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+  import { getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
   // FIREBASE CONFIG
   const firebaseConfig = {
@@ -102,18 +77,30 @@ video { width: 100%; height: 100vh; object-fit: cover; }
 
   let currentUser = null;
 
-  // Global Attachments for HTML Buttons
+  // Login Trigger
   window.loginWithGoogle = async () => {
       try {
-          await signInWithPopup(auth, provider);
+          await signInWithRedirect(auth, provider);
       } catch (err) {
-          alert("ಲಾಗಿನ್ ಫೇಲ್ ಆಗಿದೆ: " + err.message);
+          alert("ಲಾಗಿನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
       }
   };
 
+  // Logout Trigger
   window.logoutApp = () => {
-      signOut(auth);
+      if(confirm("ಖಂಡಿತ ಲಾಗ್ ಔಟ್ ಮಾಡಬೇಕೇ?")) {
+          signOut(auth);
+      }
   };
+
+  // Handle Redirect Login Result (Crucial for Mobile/GitHub)
+  getRedirectResult(auth).then((result) => {
+      if (result?.user) {
+          console.log("Redirect Login Success:", result.user.displayName);
+      }
+  }).catch((err) => {
+      console.error("Redirect Error:", err);
+  });
 
   // Auth State Listener
   onAuthStateChanged(auth, (user) => {
@@ -122,7 +109,7 @@ video { width: 100%; height: 100vh; object-fit: cover; }
           document.getElementById("authScreen").style.display = "none";
           document.getElementById("appContent").style.display = "block";
           document.getElementById("navUserPic").src = user.photoURL || "https://via.placeholder.com/150";
-          document.getElementById("navUserName").innerText = user.displayName;
+          document.getElementById("navUserName").innerText = user.displayName.split(" ")[0]; // First Name Only
           loadLiveReels();
       } else {
           currentUser = null;
@@ -131,7 +118,7 @@ video { width: 100%; height: 100vh; object-fit: cover; }
       }
   });
 
-  // Load Reels Logics
+  // Load Reels from Firestore Live
   function loadLiveReels() {
       const q = query(collection(db, "reels"), orderBy("timestamp", "desc"));
       onSnapshot(q, (snapshot) => {
@@ -139,7 +126,7 @@ video { width: 100%; height: 100vh; object-fit: cover; }
           container.innerHTML = "";
           
           if(snapshot.empty) {
-              container.innerHTML = `<div class="reel"><h3 style='color: #666;'>ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ. + Add Footage ಬಳಸಿ ಮೊದಲಿಗರಾಗಿ!</h3></div>`;
+              container.innerHTML = `<div class="reel"><h3 style='color: #666; text-align:center; padding:20px;'>ಯಾವುದೇ ವಿಡಿಯೋ ಲೈವ್ ಇಲ್ಲ.<br>ಕೆಳಗಿನ ಬಟನ್ ಬಳಸಿ ಮೊದಲ ವಿಡಿಯೋ ಹಾಕಿ! ✨</h3></div>`;
               return;
           }
 
@@ -153,7 +140,7 @@ video { width: 100%; height: 100vh; object-fit: cover; }
                       <div class="creator-details">
                           <div class="creator-user">
                               <img class="creator-img" src="${data.creatorPic || 'https://via.placeholder.com/150'}">
-                              <span>${data.creatorName || 'Anonymous'}</span>
+                              <span>@${data.creatorName || 'creator'}</span>
                           </div>
                           <span class="subtitle-text">${data.subtitle || ''}</span>
                       </div>
@@ -175,8 +162,16 @@ video { width: 100%; height: 100vh; object-fit: cover; }
   // Upload Video Logic
   window.uploadFileToFirebase = async (file) => {
       if(!file || !currentUser) return;
+      
+      // Basic size filter (Max 30MB)
+      if (file.size > 30 * 1024 * 1024) {
+          alert("ವಿಡಿಯೋ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ! ದಯವಿಟ್ಟು 30MB ಗಿಂತ ಕಡಿಮೆ ಇರೋ ವಿಡಿಯೋ ಹಾಕಿ.");
+          return;
+      }
+
       let btn = document.getElementById("addBtn");
-      btn.innerText = "⚡ Uploading...";
+      let originalText = btn.innerText;
+      btn.innerText = "⚡ Uploading Data To Server...";
       btn.disabled = true;
 
       try {
@@ -184,7 +179,7 @@ video { width: 100%; height: 100vh; object-fit: cover; }
           let uploadSnap = await uploadBytes(storageRef, file);
           let downloadUrl = await getDownloadURL(uploadSnap.ref);
           
-          let subText = document.getElementById("caption-box").value || "Hudko Reels Studio 📲";
+          let subText = document.getElementById("caption-box").value || "Hudko Reels Studio Feel 📲🔥";
 
           await addDoc(collection(db, "reels"), {
               url: downloadUrl,
@@ -196,20 +191,25 @@ video { width: 100%; height: 100vh; object-fit: cover; }
               timestamp: Date.now()
           });
 
-          alert("🔥 ನಿಮ್ಮ ವಿಡಿಯೋ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಲೋಡ್ ಆಗಿ ಜಗತ್ತಿಗೆ ಲೈವ್ ಆಗಿದೆ!");
+          alert("🔥 ಯೆಸ್! ನಿಮ್ಮ ವಿಡಿಯೋ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಲೋಡ್ ಆಗಿ ಜಗತ್ತಿಗೆ ಲೈವ್ ಆಗಿದೆ!");
           document.getElementById("caption-box").value = "";
       } catch (err) {
           console.error(err);
-          alert("Error: ಅಪ್‌ಲೋಡ್ ಫೇಲ್ ಆಗಿದೆ, ರೂಲ್ಸ್ ಚೆಕ್ ಮಾಡಿ!");
+          alert("ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಫೈರ್‌ಬೇಸ್ ಸ್ಟೋರೇಜ್ ರೂಲ್ಸ್ ಪರಿಶೀಲಿಸಿ!");
       } finally {
-          btn.innerText = "+ Add Footage";
+          btn.innerText = originalText;
           btn.disabled = false;
       }
   };
 
+  // Like System Logic
   window.likeVideo = async (id, currentLikes) => {
-      const docRef = doc(db, "reels", id);
-      await updateDoc(docRef, { likes: currentLikes + 1 });
+      try {
+          const docRef = doc(db, "reels", id);
+          await updateDoc(docRef, { likes: currentLikes + 1 });
+      } catch (err) {
+          console.error("Like error:", err);
+      }
   };
 </script>
 </head>
@@ -218,9 +218,9 @@ video { width: 100%; height: 100vh; object-fit: cover; }
 <div id="authScreen">
     <div class="auth-box">
         <div class="auth-logo">HUDKO REELS</div>
-        <div class="auth-desc">ಕ್ರಿಯೇಟರ್ಸ್ ಲೋಕಕ್ಕೆ ಸುಸ್ವಾಗತ. ಮುಂದುವರೆಯಲು ಲಾಗಿನ್ ಮಾಡಿ.</div>
+        <div class="auth-desc">ಕ್ರಿಯೇಟರ್ಸ್ ಮತ್ತು ಶಾರ್ಟ್ ವಿಡಿಯೋ ಲೋಕಕ್ಕೆ ಸುಸ್ವಾಗತ. ಮುಂದುವರೆಯಲು ನಿಮ್ಮ ಗೂಗಲ್ ಖಾತೆಯಿಂದ ಲಾಗಿನ್ ಮಾಡಿ.</div>
         <button class="google-btn" onclick="loginWithGoogle()">
-            <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/logo_googleg_color_24dp.png" width="18">
+            <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/logo_googleg_color_24dp.png" width="20">
             Sign in with Google
         </button>
     </div>
@@ -232,7 +232,7 @@ video { width: 100%; height: 100vh; object-fit: cover; }
       <div class="btn-group">
           <div class="user-profile">
               <img class="profile-pic" id="navUserPic" src="">
-              <span id="navUserName" style="font-size: 12px; font-weight: bold; color: #ccc;"></span>
+              <span id="navUserName" style="font-size: 13px; font-weight: bold; color: #eee;"></span>
           </div>
           <button class="logout-btn" onclick="logoutApp()">Logout</button>
       </div>
@@ -243,11 +243,11 @@ video { width: 100%; height: 100vh; object-fit: cover; }
     <div id="reelsContainer"></div>
 
     <div id="panel">
-        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #ffaa00;">🚀 Upload Dashboard</h3>
-        <label style="font-size: 12px; color: #aaa;">ವಿಡಿಯೋ ಡೈಲಾಗ್ / ಕ್ಯಾಪ್ಷನ್ ಇಲ್ಲಿ ಬರೆಯಿರಿ:</label>
-        <input type="text" id="caption-box" class="caption-input" placeholder="ರೀಲ್ಸ್ ಕ್ಯಾಪ್ಷನ್ ಟೈಪ್ ಮಾಡಿ... ✍️">
-        <br><br>
-        <button class="upload-btn" id="addBtn" style="width: 100%; padding: 14px;" onclick="document.getElementById('fileInput').click()">+ SELECT VIDEO & UPLOAD</button>
+        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #ffaa00; font-weight: 800;">🚀 Upload Dashboard</h3>
+        <label style="font-size: 12px; color: #aaa;">ನಿಮ್ಮ ವಿಡಿಯೋ ಡೈಲಾಗ್ ಅಥವಾ ಹ್ಯಾಶ್‌ಟ್ಯಾಗ್ ಇಲ್ಲಿ ಬರೆಯಿರಿ:</label>
+        <input type="text" id="caption-box" class="caption-input" placeholder="ಕ್ಯಾಪ್ಷನ್ ಬರೆಯಿರಿ (Eg: My new bike status #trending)... ✍️">
+        
+        <button class="upload-btn" id="addBtn" onclick="document.getElementById('fileInput').click()">+ SELECT VIDEO & UPLOAD</button>
     </div>
 </div>
 
