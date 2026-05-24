@@ -121,6 +121,74 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
 @keyframes flip { 0% { transform: perspective(600px) rotateY(0) scale(1.2); } 100% { transform: perspective(600px) rotateY(360deg) scale(1.2); } }
 </style>
 
+</head>
+<body>
+
+<audio id="bgmAudio" loop playsinline crossorigin="anonymous"></audio>
+
+<div id="authScreen">
+    <div class="auth-box">
+        <div class="auth-logo">HUDKO REELS MAX</div>
+        <input type="email" id="emailInput" class="auth-input" placeholder="ಇಮೇಲ್" value="test@hudko.com">
+        <input type="password" id="passInput" class="auth-input" placeholder="ಪಾಸ್‌ವರ್ಡ್‌" value="123456">
+        <button class="action-btn login-btn" onclick="loginWithEmail()">LOG IN</button>
+        <button class="action-btn signup-btn" onclick="signUpWithEmail()">SIGN UP</button>
+    </div>
+</div>
+
+<div id="appContent">
+    <div id="top">
+        <h2 class="brand">🎬 HUDKO KANNADA</h2>
+        <div class="btn-group">
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">+ Video</button>
+            <button class="upload-btn export-btn" onclick="exportCinematicVideo()">⚡ Export</button>
+        </div>
+    </div>
+    <input type="file" id="fileInput" accept="video/*" hidden>
+
+    <div id="reelsContainer">
+        <div class="reel">
+            <div class="video-wrapper">
+                <div class="vignette-overlay" id="vignette"></div>
+                <div class="grain-overlay" id="grain"></div>
+                <div class="letterbox-overlay" id="letterbox"></div>
+                <div class="vhs-overlay" id="vhs"></div>
+                <div class="lightleak-overlay" id="lightleak"></div>
+                
+                <div class="play-indicator" id="playIndicator">⏸️</div>
+                
+                <div class="info-overlay-layer">
+                    <span class="uploader-profile-name" id="uploader-tag">@user</span>
+                    <span class="subtitle-text" id="caption-box">ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶</span>
+                    <span class="audio-name-tag" id="audio-tag">🎵 Original Sound</span>
+                </div>
+
+                <div class="social-engagement">
+                    <div class="engage-item" onclick="triggerSocialAction('like')"><div class="engage-icon">❤️</div><span id="count-like">0</span></div>
+                    <div class="engage-item" onclick="triggerSocialAction('comment')"><div class="engage-icon">💬</div><span id="count-comment">0</span></div>
+                    <div class="engage-item" onclick="triggerSocialAction('share')"><div class="engage-icon">✈️</div><span>Share</span></div>
+                </div>
+                <video id="v" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+    </div>
+
+    <div id="panel">
+        <div class="tabs">
+            <div class="tab active" id="tab-lut" onclick="switchTab('lut')">📽️ Filters</div>
+            <div class="tab" id="tab-motion" onclick="switchTab('motion')">🌀 FX Magic</div>
+            <div class="tab" id="tab-overlay" onclick="switchTab('overlay')">🎭 Overlays</div>
+            <div class="tab" id="tab-speed" onclick="switchTab('speed')">⚡ Speed</div>
+            <div class="tab" id="tab-audio" onclick="switchTab('audio')">🎵 Music</div>
+            <div class="tab" id="tab-color" onclick="switchTab('color')">🎨 Adjust</div>
+            <div class="tab" id="tab-subtitle" onclick="switchTab('subtitle')">✍️ Text</div>
+            <div class="tab" style="color: #ff0055;" onclick="logoutApp()">✕</div>
+        </div>
+        <div id="content"></div>
+    </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
@@ -168,7 +236,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       { name: "Darshan Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=DBoss" }
   ];
 
-  // 🎵 ಬೃಹತ್ ಜ್ಯೂಸ್‌ಫುಲ್ ಒರಿಜಿನಲ್ ಕನ್ನಡ ಹಾಡುಗಳ ಲಿಸ್ಟ್ (High Quality ಸ್ಟ್ರೀಮಿಂಗ್ ಸರ್ವರ್ಸ್)
   const KANNADA_AUDIO_TRACKS = [
       { name: "Toofan (KGF Chapter 2)", artist: "Santhosh Venky, Ravi Basrur", img: "https://api.dicebear.com/7.x/initials/svg?seed=Toofan", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Toofan%20KGF%202%20Kannada.mp3" },
       { name: "Salaam Rocky Bhai (KGF 1)", artist: "Vijay Prakash, Ravi Basrur", img: "https://api.dicebear.com/7.x/initials/svg?seed=Rocky", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Salaam%20Rocky%20Bhai.mp3" },
@@ -233,8 +300,26 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       document.getElementById("caption-box").innerText = reelData.subtitle || "...";
       document.getElementById("audio-tag").innerText = "🎵 " + (reelData.audioTrackName || "Original Sound");
 
-      if(reelData.audioTrackUrl) { bgmAudioPlayer.src = reelData.audioTrackUrl; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play().catch(()=>{}); activeVid.muted = true; } 
-      else { bgmAudioPlayer.pause(); activeVid.muted = false; }
+      if(reelData.audioTrackUrl) { 
+          bgmAudioPlayer.src = reelData.audioTrackUrl; 
+          bgmAudioPlayer.currentTime = 0; 
+          
+          // GitHub Pages ಅಟೋಪ್ಲೇ ಬ್ಲಾಕ್ ತಡೆಯಲು ಯೂಸರ್ ಇಂಟರಾಕ್ಷನ್ ಹ್ಯಾಂಡ್ಲರ್ ಬೈಪಾಸ್
+          let startPlay = () => {
+              bgmAudioPlayer.play().catch(e => console.log("Playback standard block handled"));
+              document.removeEventListener('click', startPlay);
+              document.removeEventListener('touchstart', startPlay);
+          };
+          document.addEventListener('click', startPlay);
+          document.addEventListener('touchstart', startPlay);
+          
+          bgmAudioPlayer.play().catch(()=>{}); 
+          activeVid.muted = true; 
+      } 
+      else { 
+          bgmAudioPlayer.pause(); 
+          activeVid.muted = false; 
+      }
       
       activeVid.className = reelData.motionClass || "";
       activeVid.playbackRate = reelData.speed || 1.0;
@@ -335,7 +420,9 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
 
   window.switchTab = (tab) => {
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      document.getElementById(`tab-${tab}`).classList.add("active"); renderTools(tab);
+      const targetTab = document.getElementById(`tab-${tab}`);
+      if(targetTab) targetTab.classList.add("active"); 
+      renderTools(tab);
   };
 
   function renderTools(type) {
@@ -437,7 +524,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       }
   }
 
-  // ⚡ ಫಿಕ್ಸ್ಡ್ ಆಡಿಯೋ ಪ್ಲೇಯರ್ ಎಂಜಿನ್ (ಬ್ರೌಸರ್ ಬ್ಲಾಕ್ ಬೈಪಾಸ್)
   function renderFilteredAudioList(queryText) {
       let wrapper = document.getElementById("audioListWrapper"); if(!wrapper) return; wrapper.innerHTML = "";
       let filtered = KANNADA_AUDIO_TRACKS.filter(track => track.name.toLowerCase().includes(queryText) || track.artist.toLowerCase().includes(queryText));
@@ -460,16 +546,18 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
               <button class="song-play-btn-circle">${isSelected && !bgmAudioPlayer.paused ? '⏸' : '▶'}</button>
           `;
           
-          item.onclick = function() { 
-              // ಯೂಸರ್ ಇಂಟರಾಕ್ಷನ್ ಮೂಲಕ ಬ್ರೌಸರ್ ಆಡಿಯೋ ಬ್ಲಾಕ್ ತೆರವುಗೊಳಿಸುವುದು
+          item.onclick = function(e) { 
+              e.stopPropagation();
               if (selectedAudioUrl === track.url && !bgmAudioPlayer.paused) {
                   bgmAudioPlayer.pause();
               } else {
                   selectedAudioUrl = track.url; 
                   selectedAudioName = track.name; 
                   
+                  // ಕೋರ್ ಫಿಕ್ಸ್: ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಬದಲಾದಾಗ ಎಂಜಿನ್ ರೀ-ಲೋಡ್ ಹಾಗೂ ಬ್ರೌಸರ್ ಕ್ರಾಸ್-ಒರಿಜಿನ್ ಹ್ಯಾಂಡ್ಲಿಂಗ್
+                  bgmAudioPlayer.crossOrigin = "anonymous";
                   bgmAudioPlayer.src = track.url; 
-                  bgmAudioPlayer.load(); // ಫೋರ್ಸ್ ಲೋಡ್
+                  bgmAudioPlayer.load();
                   
                   let playPromise = bgmAudioPlayer.play();
                   if (playPromise !== undefined) {
@@ -480,7 +568,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
                               activeVid.play().catch(()=>{});
                           }
                       }).catch(error => {
-                          console.log("Autoplay blocked, trying fallback:", error);
+                          console.log("Autoplay context initialization fallback:", error);
+                          // ಫೋರ್ಸ್ ಪ್ಲೇ ಮೆಕ್ಯಾನಿಸಂ ಆನ್ ಮುಟೇಡ್ ಸ್ಟೇಟ್
+                          bgmAudioPlayer.muted = false;
+                          bgmAudioPlayer.play().catch(()=>{});
                       });
                   }
                   document.getElementById("audio-tag").innerText = "🎵 " + track.name;
@@ -503,76 +594,12 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       document.getElementById("lightleak").style.display = overlaySettings.lightleak ? "block" : "none";
   }
   
-  // ಗ್ಲೋಬಲ್ ವಿಂಡೋ ಅಟ್ಯಾಚ್‌ಮೆಂಟ್ಸ್ (inline onclick ವರ್ಕಿಂಗ್ ಆಗಿರಲು)
+  // ಮಾಡ್ಯೂಲ್ ಸ್ಕೋಪ್‌ನಿಂದ ಗ್ಲೋಬಲ್ ವಿಂಡೋಗೆ ಬೈಂಡ್ ಮಾಡಲಾಗಿದೆ
   window.switchTab = switchTab;
+  window.logoutApp = logoutApp;
+  window.loginWithEmail = loginWithEmail;
+  window.signUpWithEmail = signUpWithEmail;
+  window.exportCinematicVideo = exportCinematicVideo;
 </script>
-</head>
-<body>
-
-<audio id="bgmAudio" loop playsinline crossorigin="anonymous"></audio>
-
-<div id="authScreen">
-    <div class="auth-box">
-        <div class="auth-logo">HUDKO REELS MAX</div>
-        <input type="email" id="emailInput" class="auth-input" placeholder="ಇಮೇಲ್" value="test@hudko.com">
-        <input type="password" id="passInput" class="auth-input" placeholder="ಪಾಸ್‌ವರ್ಡ್‌" value="123456">
-        <button class="action-btn login-btn" onclick="loginWithEmail()">LOG IN</button>
-        <button class="action-btn signup-btn" onclick="signUpWithEmail()">SIGN UP</button>
-    </div>
-</div>
-
-<div id="appContent">
-    <div id="top">
-        <h2 class="brand">🎬 HUDKO KANNADA</h2>
-        <div class="btn-group">
-            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">+ Video</button>
-            <button class="upload-btn export-btn" onclick="exportCinematicVideo()">⚡ Export</button>
-        </div>
-    </div>
-    <input type="file" id="fileInput" accept="video/*" hidden>
-
-    <div id="reelsContainer">
-        <div class="reel">
-            <div class="video-wrapper">
-                <div class="vignette-overlay" id="vignette"></div>
-                <div class="grain-overlay" id="grain"></div>
-                <div class="letterbox-overlay" id="letterbox"></div>
-                <div class="vhs-overlay" id="vhs"></div>
-                <div class="lightleak-overlay" id="lightleak"></div>
-                
-                <div class="play-indicator" id="playIndicator">⏸️</div>
-                
-                <div class="info-overlay-layer">
-                    <span class="uploader-profile-name" id="uploader-tag">@user</span>
-                    <span class="subtitle-text" id="caption-box">ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶</span>
-                    <span class="audio-name-tag" id="audio-tag">🎵 Original Sound</span>
-                </div>
-
-                <div class="social-engagement">
-                    <div class="engage-item" onclick="triggerSocialAction('like')"><div class="engage-icon">❤️</div><span id="count-like">0</span></div>
-                    <div class="engage-item" onclick="triggerSocialAction('comment')"><div class="engage-icon">💬</div><span id="count-comment">0</span></div>
-                    <div class="engage-item" onclick="triggerSocialAction('share')"><div class="engage-icon">✈️</div><span>Share</span></div>
-                </div>
-                <video id="v" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
-            </div>
-            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-        </div>
-    </div>
-
-    <div id="panel">
-        <div class="tabs">
-            <div class="tab active" id="tab-lut" onclick="switchTab('lut')">📽️ Filters</div>
-            <div class="tab" id="tab-motion" onclick="switchTab('motion')">🌀 FX Magic</div>
-            <div class="tab" id="tab-overlay" onclick="switchTab('overlay')">🎭 Overlays</div>
-            <div class="tab" id="tab-speed" onclick="switchTab('speed')">⚡ Speed</div>
-            <div class="tab" id="tab-audio" onclick="switchTab('audio')">🎵 Music</div>
-            <div class="tab" id="tab-color" onclick="switchTab('color')">🎨 Adjust</div>
-            <div class="tab" id="tab-subtitle" onclick="switchTab('subtitle')">✍️ Text</div>
-            <div class="tab" style="color: #ff0055;" onclick="logoutApp()">✕</div>
-        </div>
-        <div id="content"></div>
-    </div>
-</div>
-
 </body>
 </html>
