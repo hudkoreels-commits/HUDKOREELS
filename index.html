@@ -32,7 +32,7 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-sizing: border-box; }
 
 /* 🛠️ FIXED: VIDEO OBJECT-FIT TO PREVENT POPPING OUT OF THE FRAME */
-video { width: 100%; height: 100%; object-fit: contain; background: #000; transition: filter 0.1s ease; position: relative; z-index: 1; }
+video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; center: relative; z-index: 1; }
 
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
 .progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
