@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🎬 HUDKO REELS STUDIO v200 - MAX PRO</title>
+<title>🎬 HUDKO REELS STUDIO v300 - ULTRA MAX</title>
 
 <style>
-/* ಒರಿಜಿನಲ್ ಲೇಔಟ್ */
 * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
 body { background: #000; overflow: hidden; color: white; user-select: none; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
 
@@ -27,28 +26,22 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .upload-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; }
 .upload-btn.export-btn { background: linear-gradient(45deg, #00fff2, #0066ff); border: none; color: black; font-weight: 900; }
 
-/* REELS CONTAINER (53vh) */
+/* REELS CONTAINER */
 #reelsContainer { width: 100%; height: 53vh; position: absolute; top: 0; left: 0; background: #000; touch-action: none; }
 .reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
 .video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 video { width: 100%; height: 100%; object-fit: cover; }
 
-/* PROGRESS & ICONS */
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
 .progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
 .play-indicator { position: absolute; font-size: 50px; color: rgba(255,255,255,0.7); z-index: 30; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
-.floating-heart { position: absolute; font-size: 80px; color: #ff0055; z-index: 100; pointer-events: none; animation: floatUp 1s ease-out forwards; opacity: 0; }
-@keyframes floatUp { 0% { transform: scale(0) translateY(0); opacity: 1; } 50% { transform: scale(1.2) translateY(-50px); opacity: 1; } 100% { transform: scale(1) translateY(-100px); opacity: 0; } }
 
-/* CINEMATIC OVERLAYS */
+/* OVERLAYS */
 .vignette-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.95) 98%); pointer-events: none; z-index: 2; display: none; }
 .grain-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.08; pointer-events: none; z-index: 3; display: none; }
 .letterbox-overlay { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; z-index: 4; display: none; }
 .letterbox-overlay::before, .letterbox-overlay::after { content: ''; width: 100%; height: 4vh; background: black; }
-.vhs-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px); pointer-events:none; z-index:5; display:none; }
-.lightleak-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(45deg, rgba(255,85,0,0.25), transparent 50%, rgba(0,255,242,0.15)); pointer-events:none; z-index:6; mix-blend-mode: screen; display:none; }
 
-/* DETAILS & SOCIALS */
 .info-overlay-layer { position: absolute; bottom: 15px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 4px; }
 .uploader-profile-name { font-size: 14px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 3px #000; }
 .subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 6px; display: inline-block; border-left: 3px solid #ffaa00; }
@@ -70,61 +63,46 @@ video { width: 100%; height: 100%; object-fit: cover; }
 .audio-search-bar:focus { border-color: #ffaa00; background: rgba(255,255,255,0.1); }
 
 .grid-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; overflow-y: auto; flex-grow: 1; padding-bottom: 8px; }
-.item-btn { padding: 12px 4px; font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: #cfcfcf; border-radius: 8px; cursor: pointer; text-align: center; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-.item-btn.selected { background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none; box-shadow: 0 0 10px rgba(255,170,0,0.5); }
+.item-btn { padding: 12px 4px; font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: #cfcfcf; border-radius: 8px; cursor: pointer; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-btn.selected { background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none; }
 
-.slider-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; padding: 5px; }
+.slider-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; }
 .slider-group { display: flex; flex-direction: column; gap: 3px; }
 .slider-group label { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; }
 input[type=range] { width: 100%; accent-color: #ffaa00; }
 .caption-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; }
 
-/* ಮ್ಯೂಸಿಕ್ ಲಿಸ್ಟ್ UI ಡಿಸೈನ್ */
+/* MUSIC MULTI-PLAYLIST UI */
 .audio-section-wrapper { display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-bottom: 10px; }
-.music-title-heading { font-size: 12px; font-weight: bold; color: #888; margin: 8px 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-
-.playlist-scroll-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin-bottom: 15px; padding-bottom: 2px; flex-shrink: 0; }
+.music-title-heading { font-size: 12px; font-weight: bold; color: #ffaa00; margin: 8px 0 6px 0; text-transform: uppercase; letter-spacing: 1px; }
+.playlist-scroll-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin-bottom: 15px; flex-shrink: 0; padding-bottom: 4px; }
 .playlist-scroll-row::-webkit-scrollbar { display: none; }
-.playlist-card { flex: 0 0 100px; text-align: center; cursor: pointer; }
-.playlist-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-.playlist-card p { font-size: 11px; font-weight: 600; margin-top: 4px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.playlist-card { flex: 0 0 110px; text-align: center; cursor: pointer; transition: transform 0.2s; }
+.playlist-card:active { transform: scale(0.95); }
+.playlist-card img { width: 100%; height: 75px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); }
+.playlist-card p { font-size: 11px; font-weight: 700; margin-top: 5px; color: #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.songs-vertical-list { display: flex; flex-direction: column; gap: 12px; }
-.song-list-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); transition: background 0.2s; cursor: pointer; }
-.song-list-item.active-song { background: rgba(255, 170, 0, 0.1); border-color: rgba(255, 170, 0, 0.3); }
+.songs-vertical-list { display: flex; flex-direction: column; gap: 10px; }
+.song-list-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+.song-list-item.active-song { background: rgba(255, 170, 0, 0.15); border-color: rgba(255, 170, 0, 0.4); }
 .song-left-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; pointer-events: none; }
-.song-poster { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; background: #222; flex-shrink: 0; }
+.song-poster { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; background: #222; border: 1px solid rgba(255,255,255,0.1); }
 .song-meta-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.song-display-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.song-artist-sub { font-size: 11px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.song-play-btn-circle { width: 32px; height: 32px; background: rgba(255,255,255,0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; border: none; color: white; flex-shrink: 0; pointer-events: none; }
-.song-list-item.active-song .song-play-btn-circle { background: #ffaa00; color: #000; font-weight: bold; }
+.song-display-title { font-size: 13px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.song-artist-sub { font-size: 11px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.song-play-btn-circle { width: 34px; height: 34px; background: rgba(255,255,255,0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; border: none; flex-shrink: 0; }
+.song-list-item.active-song .song-play-btn-circle { background: #ffaa00; color: #000; font-weight: bold; box-shadow: 0 0 8px #ffaa00; }
 
 /* FX KEYFRAMES */
 .fx-zoom-1 { animation: z1 6s infinite alternate ease-in-out; } .fx-zoom-3 { animation: z3 2s infinite linear; }
-.fx-pan-l { animation: pl 5s infinite alternate; } .fx-shake-h { animation: sh3 0.08s infinite linear; }
-.fx-bounce-1 { animation: b1 0.4s infinite ease-in-out; } .fx-glitch-1 { animation: g1 0.3s infinite; }
-.fx-whip-h { animation: wh 3s infinite; } .fx-pulse { animation: pulse 1s infinite alternate ease-in-out; }
-.fx-flash { animation: flash 0.4s infinite; } .fx-spin { animation: spin 5s infinite linear; }
-.fx-swing { animation: swing 2s infinite ease-in-out; } .fx-elastic { animation: elastic 1.5s infinite; }
-.fx-flip { animation: flip 3s infinite ease-in-out; }
-
+.fx-shake-h { animation: sh3 0.08s infinite linear; } .fx-bounce-1 { animation: b1 0.4s infinite ease-in-out; }
 @keyframes z1 { 0%{transform:scale(1);} 100%{transform:scale(1.25);} } @keyframes z3 { 0%{transform:scale(1);} 100%{transform:scale(1.8);} }
-@keyframes pl { 0%{transform:scale(1.2) translateX(-5%);} 100%{transform:scale(1.2) translateX(5%);} } @keyframes sh3 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-6px,5px) rotate(1deg);} }
-@keyframes b1 { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} } @keyframes g1 { 0%{transform:translate(0);filter:hue-rotate(0deg);} 50%{transform:translate(-2px,2px);filter:hue-rotate(90deg);} 100%{transform:translate(0);} }
-@keyframes wh { 0%,100%{transform:translateX(0);filter:blur(0);} 45%{transform:translateX(-50%);filter:blur(4px);} 50%{transform:translateX(50%);} }
-@keyframes pulse { 0% { transform: scale(1); filter: brightness(100%); } 100% { transform: scale(1.15); filter: brightness(140%); } }
-@keyframes flash { 0%, 100% { filter: brightness(100%) contrast(100%); } 50% { filter: brightness(250%) contrast(150%); } }
-@keyframes spin { 0% { transform: rotate(0deg) scale(1.5); } 100% { transform: rotate(360deg) scale(1.5); } }
-@keyframes swing { 0%, 100% { transform: rotate(-8deg) scale(1.2); } 50% { transform: rotate(8deg) scale(1.2); } }
-@keyframes elastic { 0%, 100% { transform: scale(1); } 30% { transform: scaleX(1.25) scaleY(0.75); } 40% { transform: scaleX(0.75) scaleY(1.25); } 50% { transform: scaleX(1.15) scaleY(0.85); } 65% { transform: scaleX(0.95) scaleY(1.05); } 75% { transform: scaleX(1.05) scaleY(0.95); } }
-@keyframes flip { 0% { transform: perspective(600px) rotateY(0) scale(1.2); } 100% { transform: perspective(600px) rotateY(360deg) scale(1.2); } }
+@keyframes sh3 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-6px,5px) rotate(1deg);} } @keyframes b1 { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
 </style>
-
 </head>
 <body>
 
-<audio id="bgmAudio" loop playsinline crossorigin="anonymous"></audio>
+<audio id="bgmAudio" loop playsinline></audio>
 
 <div id="authScreen">
     <div class="auth-box">
@@ -152,8 +130,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
                 <div class="vignette-overlay" id="vignette"></div>
                 <div class="grain-overlay" id="grain"></div>
                 <div class="letterbox-overlay" id="letterbox"></div>
-                <div class="vhs-overlay" id="vhs"></div>
-                <div class="lightleak-overlay" id="lightleak"></div>
                 
                 <div class="play-indicator" id="playIndicator">⏸️</div>
                 
@@ -216,8 +192,8 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
   let currentLUT = 'f-none';
   let currentMotion = '';
   let currentSpeed = 1.0; 
-  let overlaySettings = { vignette: false, grain: false, letterbox: false, vhs: false, lightleak: false };
-  let gradingSettings = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, invert: 0 };
+  let overlaySettings = { vignette: false, grain: false, letterbox: false };
+  let gradingSettings = { brightness: 100, contrast: 100 };
   
   let activeLocalVideoFile = null;
   let selectedAudioUrl = "";
@@ -229,43 +205,26 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
   const activeVid = document.getElementById("v");
   const progressBar = document.getElementById("progressBar");
 
+  // 500+ ಸಾಂಗ್ಸ್ ಲೋಡ್ ಮಾಡಲು ವೈವಿಧ್ಯಮಯ ಕನ್ನಡ ಕ್ಯಾಟಗರಿಗಳು
   const KANNADA_PLAYLISTS = [
-      { name: "KGF Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=KGF" },
-      { name: "Yash Mass", img: "https://api.dicebear.com/7.x/initials/svg?seed=Yash" },
-      { name: "Trending", img: "https://api.dicebear.com/7.x/initials/svg?seed=Trend" },
-      { name: "Darshan Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=DBoss" }
-  ];
-
-  const KANNADA_AUDIO_TRACKS = [
-      { name: "Toofan (KGF Chapter 2)", artist: "Santhosh Venky, Ravi Basrur", img: "https://api.dicebear.com/7.x/initials/svg?seed=Toofan", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Toofan%20KGF%202%20Kannada.mp3" },
-      { name: "Salaam Rocky Bhai (KGF 1)", artist: "Vijay Prakash, Ravi Basrur", img: "https://api.dicebear.com/7.x/initials/svg?seed=Rocky", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Salaam%20Rocky%20Bhai.mp3" },
-      { name: "Sulthana (KGF Chapter 2)", artist: "Ravi Basrur & Crew", img: "https://api.dicebear.com/7.x/initials/svg?seed=Sulthana", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Sulthana%20KGF%202.mp3" },
-      { name: "Salaar Rebel Anthem", artist: "Vijay Prakash", img: "https://api.dicebear.com/7.x/initials/svg?seed=Salaar", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Salaar%20Rebel%20Anthem%20Kannada.mp3" },
-      { name: "Varaha Roopam (Kantara)", artist: "Sai Vignesh", img: "https://api.dicebear.com/7.x/initials/svg?seed=Kantara", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Varaha%20Roopam%20Kantara.mp3" },
-      { name: "Yuva Title Track", artist: "Nakash Aziz, Ajaneesh", img: "https://api.dicebear.com/7.x/initials/svg?seed=Yuva", url: "https://pub-c5e31b5cdafb419a82e6973ec5520ece.r2.dev/Yuva%20Title%20Track.mp3" },
-      { name: "Dheera Dheera (KGF 1)", artist: "Ananya Bhat", img: "https://api.dicebear.com/7.x/initials/svg?seed=Dheera", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-      { name: "Mehaboba (KGF Chapter 2)", artist: "Ananya Bhat", img: "https://api.dicebear.com/7.x/initials/svg?seed=Mehaboba", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-      { name: "Garbadhi (KGF Chapter 1)", artist: "Ananya Bhat", img: "https://api.dicebear.com/7.x/initials/svg?seed=Garbadhi", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-      { name: "Kranti - Dharani Mandalada", artist: "Pancham Jeeva", img: "https://api.dicebear.com/7.x/initials/svg?seed=Kranti", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+      { name: "KGF 2", term: "KGF Chapter 2", img: "https://api.dicebear.com/7.x/initials/svg?seed=KGF" },
+      { name: "Kantara", term: "Kantara", img: "https://api.dicebear.com/7.x/initials/svg?seed=KN" },
+      { name: "Pushpa 2 Kannada", term: "Pushpa 2 Kannada", img: "https://api.dicebear.com/7.x/initials/svg?seed=PP" },
+      { name: "Dr Rajkumar", term: "Dr. Rajkumar Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=Annavru" },
+      { name: "Ravichandran Romantic", term: "V. Ravichandran Hits", img: "https://api.dicebear.com/7.x/initials/svg?seed=Crazy" },
+      { name: "Arjun Janya Hits", term: "Arjun Janya", img: "https://api.dicebear.com/7.x/initials/svg?seed=Janya" },
+      { name: "Sadhu Kokila", term: "Sadhu Kokila Comedy", img: "https://api.dicebear.com/7.x/initials/svg?seed=Sadhu" },
+      { name: "Sanjith Hegde", term: "Sanjith Hegde", img: "https://api.dicebear.com/7.x/initials/svg?seed=Sanjith" }
   ];
 
   const LUT_PRESETS = {
       'f-none': '', 'f-oppenheimer': 'contrast(160%) brightness(75%) grayscale(0.2)', 'f-cyberpunk': 'hue-rotate(140deg) saturate(2.5)',
-      'f-interstellar': 'contrast(120%) brightness(85%) saturate(70%)', 'f-matrix': 'hue-rotate(55deg) saturate(1.4) contrast(1.4)',
-      'f-dune': 'sepia(0.4) contrast(1.3) brightness(85%)', 'f-kgf-gold': 'sepia(0.6) contrast(175%) brightness(75%)',
-      'f-kantara': 'saturate(1.8) contrast(140%) brightness(75%)', 'f-noir': 'grayscale(1) contrast(180%)',
-      'f-salar-dark': 'brightness(60%) contrast(190%) grayscale(0.4)'
+      'f-kgf-gold': 'sepia(0.6) contrast(175%) brightness(75%)', 'f-kantara': 'saturate(1.8) contrast(140%) brightness(75%)'
   };
 
   const MOTION_PRESETS = [
       { id: '', name: 'RAW ✖️' }, { id: 'fx-zoom-1', name: 'SLOW ZOOM 🔎' }, { id: 'fx-zoom-3', name: 'MEGA ZOOM 🚀' },
-      { id: 'fx-pan-l', name: 'PAN LEFT ➡️' }, { id: 'fx-shake-h', name: 'HARD SHAKE 🌋' }, { id: 'fx-bounce-1', name: 'BASS BOUNCE 🔊' }, 
-      { id: 'fx-glitch-1', name: 'GLITCH V1 👾' }, { id: 'fx-whip-h', name: 'WHIP HORIZ 💫' },
-      { id: 'fx-pulse', name: 'BEAT PULSE 💓' }, { id: 'fx-flash', name: 'STROBE FLASH ⚡' }
-  ];
-
-  const SPEED_PRESETS = [
-      { id: 0.25, name: 'EPIC SLO (0.25x)' }, { id: 0.5, name: 'SLO-MO (0.5x)' }, { id: 1.0, name: 'NORMAL (1x)' }, { id: 2.0, name: 'RUSH (2x)' }
+      { id: 'fx-shake-h', name: 'HARD SHAKE 🌋' }, { id: 'fx-bounce-1', name: 'BASS BOUNCE 🔊' }
   ];
 
   window.loginWithEmail = async () => {
@@ -303,20 +262,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       if(reelData.audioTrackUrl) { 
           bgmAudioPlayer.src = reelData.audioTrackUrl; 
           bgmAudioPlayer.currentTime = 0; 
-          
-          // GitHub Pages ಅಟೋಪ್ಲೇ ಬ್ಲಾಕ್ ತಡೆಯಲು ಯೂಸರ್ ಇಂಟರಾಕ್ಷನ್ ಹ್ಯಾಂಡ್ಲರ್ ಬೈಪಾಸ್
-          let startPlay = () => {
-              bgmAudioPlayer.play().catch(e => console.log("Playback standard block handled"));
-              document.removeEventListener('click', startPlay);
-              document.removeEventListener('touchstart', startPlay);
-          };
-          document.addEventListener('click', startPlay);
-          document.addEventListener('touchstart', startPlay);
-          
-          bgmAudioPlayer.play().catch(()=>{}); 
+          bgmAudioPlayer.muted = false;
+          bgmAudioPlayer.play().catch(() => {
+              bgmAudioPlayer.muted = true;
+              bgmAudioPlayer.play();
+          });
           activeVid.muted = true; 
-      } 
-      else { 
+      } else { 
           bgmAudioPlayer.pause(); 
           activeVid.muted = false; 
       }
@@ -325,14 +277,12 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       activeVid.playbackRate = reelData.speed || 1.0;
 
       let baseLutString = LUT_PRESETS[reelData.lutPreset] || "";
-      let sliderString = `brightness(${reelData.bright || 100}%) contrast(${reelData.cont || 100}%) saturate(${reelData.sat || 100}%) hue-rotate(${reelData.hue || 0}deg) blur(${reelData.blur || 0}px) invert(${reelData.invert || 0})`;
+      let sliderString = `brightness(${reelData.bright || 100}%) contrast(${reelData.cont || 100}%)`;
       activeVid.style.filter = `${baseLutString} ${sliderString}`.trim();
 
       document.getElementById("vignette").style.display = reelData.vignetteOn ? "block" : "none";
       document.getElementById("grain").style.display = reelData.grainOn ? "block" : "none";
       document.getElementById("letterbox").style.display = reelData.letterboxOn ? "block" : "none";
-      document.getElementById("vhs").style.display = reelData.vhsOn ? "block" : "none";
-      document.getElementById("lightleak").style.display = reelData.lightleakOn ? "block" : "none";
       
       document.getElementById("count-like").innerText = reelData.likes ? reelData.likes.length : "0";
       document.getElementById("count-comment").innerText = reelData.comments ? reelData.comments.length : "0";
@@ -354,7 +304,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
           lastTapTime = 0; return;
       }
       if (tapLength < 300 && tapLength > 0) {
-          triggerSocialAction('like'); showFloatingHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY); e.preventDefault();
+          triggerSocialAction('like'); e.preventDefault();
       } else {
           setTimeout(() => { if (currentTime - lastTapTime >= 300 && Math.abs(touchendY - touchstartY) < 10) togglePlayPause(); }, 300);
       }
@@ -366,12 +316,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       if(activeVid.paused) { activeVid.play(); bgmAudioPlayer.play().catch(()=>{}); indicator.innerText = "▶️"; } 
       else { activeVid.pause(); bgmAudioPlayer.pause(); indicator.innerText = "⏸️"; }
       indicator.style.opacity = "1"; setTimeout(() => { indicator.style.opacity = "0"; }, 600);
-  }
-
-  function showFloatingHeart(x, y) {
-      let heart = document.createElement("div"); heart.className = "floating-heart"; heart.innerText = "❤️";
-      heart.style.left = (x - 40) + "px"; heart.style.top = (y - 40) + "px";
-      document.body.appendChild(heart); setTimeout(() => heart.remove(), 1000);
   }
 
   activeVid.addEventListener('timeupdate', () => {
@@ -408,10 +352,8 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
               url: downloadUrl, uploader: currentUser ? currentUser.email.split('@')[0] : "user",
               subtitle: document.getElementById("caption-box").innerText, audioTrackUrl: selectedAudioUrl, audioTrackName: selectedAudioName,
               lutPreset: currentLUT, motionClass: currentMotion, speed: currentSpeed,
-              vignetteOn: overlaySettings.vignette, grainOn: overlaySettings.grain, letterboxOn: overlaySettings.letterbox, 
-              vhsOn: overlaySettings.vhs, lightleakOn: overlaySettings.lightleak,
-              bright: gradingSettings.brightness, cont: gradingSettings.contrast, sat: gradingSettings.saturate,
-              hue: gradingSettings.hueRotate, blur: gradingSettings.blur, invert: gradingSettings.invert,
+              vignetteOn: overlaySettings.vignette, grainOn: overlaySettings.grain, letterboxOn: overlaySettings.letterbox,
+              bright: gradingSettings.brightness, cont: gradingSettings.contrast, sat: 100, hue: 0, blur: 0, invert: 0,
               likes: [], comments: [], timestamp: Date.now()
           });
           alert("💥 ರೀಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್ಲೋಡ್ ಆಗಿದೆ!"); loadGlobalReelsFeed();
@@ -424,6 +366,70 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       if(targetTab) targetTab.classList.add("active"); 
       renderTools(tab);
   };
+
+  // ಗ್ಲೋಬಲ್ ಲೈವ್ ಇಂಟರ್ನೆಟ್ ಸರ್ಚ್ ಮೆಕ್ಯಾನಿಸಂ (500+ ಸಾಂಗ್ಸ್ ಆಟೋ-ಫೆಚ್ ಎಂಜಿನ್)
+  async function searchLiveWorldwideTracks(queryText) {
+      let listWrapper = document.getElementById("audioListWrapper");
+      if(!listWrapper) return;
+      listWrapper.innerHTML = "<div style='text-align:center;font-size:12px;color:#aaa;padding:15px;'>🔍 ಇಂಟರ್ನೆಟ್ ಮ್ಯಾಕ್ಸಿಮಮ್ ಲೋಡಿಂಗ್...</div>";
+      
+      try {
+          // ಲಿಮಿಟ್ ಅನ್ನು 50 ಕ್ಕೆ ಹೆಚ್ಚಿಸಲಾಗಿದೆ ಇದರಿಂದ ಪ್ರತಿಯೊಂದು ಕ್ಲಿಕ್‌ಗೂ ಹೆಚ್ಚಿನ ಹಾಡುಗಳು ಲೋಡ್ ಆಗುತ್ತವೆ
+          let response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(queryText)}&media=music&limit=50`);
+          let data = await response.json();
+          
+          if(!data.results || data.results.length === 0) {
+              listWrapper.innerHTML = "<div style='text-align:center;font-size:12px;color:#666;padding:15px;'>ಯಾವ ರಿಯಲ್ ಹಾಡು ಸಿಗಲಿಲ್ಲ! ✖️</div>";
+              return;
+          }
+          
+          listWrapper.innerHTML = "";
+          data.results.forEach(track => {
+              let isSelected = selectedAudioUrl === track.previewUrl;
+              let item = document.createElement("div");
+              item.className = `song-list-item ${isSelected ? 'active-song' : ''}`;
+              item.innerHTML = `
+                  <div class="song-left-info">
+                      <img class="song-poster" src="${track.artworkUrl60 || 'https://api.dicebear.com/7.x/initials/svg?seed=Music'}">
+                      <div class="song-meta-text">
+                          <span class="song-display-title">${track.trackName}</span>
+                          <span class="song-artist-sub">${track.artistName} - ${track.collectionName || 'Movie/Album'}</span>
+                      </div>
+                  </div>
+                  <button class="song-play-btn-circle">${isSelected && !bgmAudioPlayer.paused ? '⏸' : '▶'}</button>
+              `;
+              
+              item.onclick = function(e) {
+                  e.stopPropagation();
+                  playSelectedAudioTrack(track.previewUrl, track.trackName);
+                  searchLiveWorldwideTracks(queryText);
+              };
+              listWrapper.appendChild(item);
+          });
+      } catch (err) {
+          listWrapper.innerHTML = "<div style='text-align:center;font-size:12px;color:#ff0055;padding:15px;'>ನೆಟ್‌ವರ್ಕ್ ತೊಂದರೆ! ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</div>";
+      }
+  }
+
+  function playSelectedAudioTrack(url, name) {
+      if (selectedAudioUrl === url && !bgmAudioPlayer.paused) {
+          bgmAudioPlayer.pause();
+      } else {
+          selectedAudioUrl = url;
+          selectedAudioName = name;
+          bgmAudioPlayer.src = url;
+          bgmAudioPlayer.load();
+          
+          let p = bgmAudioPlayer.play();
+          if (p !== undefined) {
+              p.then(() => { if(activeVid) activeVid.muted = true; }).catch(() => {
+                  bgmAudioPlayer.muted = true;
+                  bgmAudioPlayer.play().then(() => { setTimeout(() => { bgmAudioPlayer.muted = false; }, 150); });
+              });
+          }
+          document.getElementById("audio-tag").innerText = "🎵 " + name;
+      }
+  }
 
   function renderTools(type) {
       let content = document.getElementById("content"); content.innerHTML = "";
@@ -446,53 +452,46 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
               content.appendChild(b);
           });
       }
-      else if (type === "speed") {
-          content.className = "grid-content";
-          SPEED_PRESETS.forEach(s => {
-              let b = document.createElement("button"); b.className = `item-btn ${currentSpeed === s.id ? 'selected' : ''}`;
-              b.innerText = s.name;
-              b.onclick = () => { currentSpeed = s.id; activeVid.playbackRate = s.id; renderTools('speed'); };
-              content.appendChild(b);
-          });
-      }
       else if (type === "audio") {
           content.className = "audio-section-wrapper"; 
           
           let searchInput = document.createElement("input"); searchInput.type = "text"; searchInput.className = "audio-search-bar";
-          searchInput.placeholder = "🔍 Search artists and sounds"; searchInput.value = audioSearchQuery;
+          searchInput.placeholder = "🔎 ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ (ಉದಾ: KGF, Kantara, Puneeth)"; searchInput.value = audioSearchQuery;
           searchInput.oninput = function() {
-              audioSearchQuery = this.value.toLowerCase(); clearTimeout(searchTimeout);
-              searchTimeout = setTimeout(() => { renderFilteredAudioList(audioSearchQuery); }, 250);
+              audioSearchQuery = this.value.trim();
+              clearTimeout(searchTimeout);
+              if(audioSearchQuery.length > 2) {
+                  searchTimeout = setTimeout(() => { searchLiveWorldwideTracks(audioSearchQuery); }, 500);
+              }
           };
           content.appendChild(searchInput);
 
-          let plTitle = document.createElement("div"); plTitle.className = "music-title-heading"; plTitle.innerText = "Playlists";
+          let plTitle = document.createElement("div"); plTitle.className = "music-title-heading"; plTitle.innerText = "Kannada Super Playlists (500+)";
           content.appendChild(plTitle);
 
           let plRow = document.createElement("div"); plRow.className = "playlist-scroll-row";
           KANNADA_PLAYLISTS.forEach(p => {
               let pCard = document.createElement("div"); pCard.className = "playlist-card";
               pCard.innerHTML = `<img src="${p.img}"><p>${p.name}</p>`;
-              pCard.onclick = () => { searchInput.value = p.name; audioSearchQuery = p.name.toLowerCase(); renderFilteredAudioList(audioSearchQuery); };
+              pCard.onclick = () => { searchInput.value = p.name; audioSearchQuery = p.term; searchLiveWorldwideTracks(p.term); };
               plRow.appendChild(pCard);
           });
           content.appendChild(plRow);
 
-          let popTitle = document.createElement("div"); popTitle.className = "music-title-heading"; popTitle.innerText = "Popular Hits";
+          let popTitle = document.createElement("div"); popTitle.className = "music-title-heading"; popTitle.innerText = "Loaded Songs";
           content.appendChild(popTitle);
 
           let listWrapper = document.createElement("div"); listWrapper.id = "audioListWrapper"; listWrapper.className = "songs-vertical-list";
           content.appendChild(listWrapper); 
           
-          renderFilteredAudioList(audioSearchQuery);
+          // ಸ್ಟಾರ್ಟಿಂಗ್‌ನಲ್ಲಿ ಟ್ರೆಂಡಿಂಗ್ ಹಾಡುಗಳನ್ನು ರೆಡಿ ಇಡುವುದು
+          searchLiveWorldwideTracks("Kannada Hits");
       }
       else if (type === "color") {
           content.className = "slider-container";
           let controls = [
               { id: 'brightness', label: 'BRIGHTNESS', min: 20, max: 200, unit: '%' },
-              { id: 'contrast', label: 'CONTRAST', min: 20, max: 250, unit: '%' },
-              { id: 'saturate', label: 'SATURATION', min: 0, max: 400, unit: '%' },
-              { id: 'hueRotate', label: 'HUE TINT', min: 0, max: 360, unit: 'deg' }
+              { id: 'contrast', label: 'CONTRAST', min: 20, max: 250, unit: '%' }
           ];
           controls.forEach(c => {
               let div = document.createElement("div"); div.className = "slider-group";
@@ -512,8 +511,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       else if (type === "overlay") {
           content.className = "grid-content";
           let overlays = [
-              { id: 'vignette', name: 'VIGNETTE 🌑' }, { id: 'grain', name: 'GRAIN 🌫️' }, { id: 'letterbox', name: 'CINEMA BARS 🎞️' },
-              { id: 'vhs', name: '90s VHS 📼' }, { id: 'lightleak', name: 'LIGHT LEAK ✨' }
+              { id: 'vignette', name: 'VIGNETTE 🌑' }, { id: 'grain', name: 'GRAIN 🌫️' }, { id: 'letterbox', name: 'CINEMA BARS 🎞️' }
           ];
           overlays.forEach(o => {
               let b = document.createElement("button"); b.className = `item-btn ${overlaySettings[o.id] ? 'selected' : ''}`;
@@ -524,77 +522,16 @@ input[type=range] { width: 100%; accent-color: #ffaa00; }
       }
   }
 
-  function renderFilteredAudioList(queryText) {
-      let wrapper = document.getElementById("audioListWrapper"); if(!wrapper) return; wrapper.innerHTML = "";
-      let filtered = KANNADA_AUDIO_TRACKS.filter(track => track.name.toLowerCase().includes(queryText) || track.artist.toLowerCase().includes(queryText));
-      
-      if(filtered.length === 0) { wrapper.innerHTML = "<div style='text-align:center; font-size:12px; color:#666; padding:20px;'>ಯಾವ ಹಾಡು ಸಿಗಲಿಲ್ಲ! ✖️</div>"; return; }
-      
-      filtered.forEach(track => {
-          let isSelected = selectedAudioUrl === track.url;
-          let item = document.createElement("div"); 
-          item.className = `song-list-item ${isSelected ? 'active-song' : ''}`;
-          
-          item.innerHTML = `
-              <div class="song-left-info">
-                  <img class="song-poster" src="${track.img}">
-                  <div class="song-meta-text">
-                      <span class="song-display-title">${track.name}</span>
-                      <span class="song-artist-sub">${track.artist}</span>
-                  </div>
-              </div>
-              <button class="song-play-btn-circle">${isSelected && !bgmAudioPlayer.paused ? '⏸' : '▶'}</button>
-          `;
-          
-          item.onclick = function(e) { 
-              e.stopPropagation();
-              if (selectedAudioUrl === track.url && !bgmAudioPlayer.paused) {
-                  bgmAudioPlayer.pause();
-              } else {
-                  selectedAudioUrl = track.url; 
-                  selectedAudioName = track.name; 
-                  
-                  // ಕೋರ್ ಫಿಕ್ಸ್: ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಬದಲಾದಾಗ ಎಂಜಿನ್ ರೀ-ಲೋಡ್ ಹಾಗೂ ಬ್ರೌಸರ್ ಕ್ರಾಸ್-ಒರಿಜಿನ್ ಹ್ಯಾಂಡ್ಲಿಂಗ್
-                  bgmAudioPlayer.crossOrigin = "anonymous";
-                  bgmAudioPlayer.src = track.url; 
-                  bgmAudioPlayer.load();
-                  
-                  let playPromise = bgmAudioPlayer.play();
-                  if (playPromise !== undefined) {
-                      playPromise.then(() => {
-                          if(activeVid) {
-                              activeVid.muted = true; 
-                              activeVid.currentTime = 0; 
-                              activeVid.play().catch(()=>{});
-                          }
-                      }).catch(error => {
-                          console.log("Autoplay context initialization fallback:", error);
-                          // ಫೋರ್ಸ್ ಪ್ಲೇ ಮೆಕ್ಯಾನಿಸಂ ಆನ್ ಮುಟೇಡ್ ಸ್ಟೇಟ್
-                          bgmAudioPlayer.muted = false;
-                          bgmAudioPlayer.play().catch(()=>{});
-                      });
-                  }
-                  document.getElementById("audio-tag").innerText = "🎵 " + track.name;
-              }
-              renderFilteredAudioList(queryText);
-          };
-          wrapper.appendChild(item);
-      });
-  }
-
   function applyMasterCinematicEngine() {
       let baseLutString = LUT_PRESETS[currentLUT] || '';
-      let sliderString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) blur(${gradingSettings.blur}px) invert(${gradingSettings.invert})`;
+      let sliderString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%)`;
       if(activeVid) { activeVid.className = currentMotion; activeVid.style.filter = `${baseLutString} ${sliderString}`.trim(); }
       
       document.getElementById("vignette").style.display = overlaySettings.vignette ? "block" : "none";
       document.getElementById("grain").style.display = overlaySettings.grain ? "block" : "none";
       document.getElementById("letterbox").style.display = overlaySettings.letterbox ? "block" : "none";
-      document.getElementById("vhs").style.display = overlaySettings.vhs ? "block" : "none";
-      document.getElementById("lightleak").style.display = overlaySettings.lightleak ? "block" : "none";
   }
   
-  // ಮಾಡ್ಯೂಲ್ ಸ್ಕೋಪ್‌ನಿಂದ ಗ್ಲೋಬಲ್ ವಿಂಡೋಗೆ ಬೈಂಡ್ ಮಾಡಲಾಗಿದೆ
   window.switchTab = switchTab;
   window.logoutApp = logoutApp;
   window.loginWithEmail = loginWithEmail;
