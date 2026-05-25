@@ -320,6 +320,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let currentFacingMode = "user";
   let canvasAnimationId = null;
 
+  // Web Audio API ಗ್ಲೋಬಲ್ ನಿರ್ವಹಣೆ (ಎರರ್ ಫಿಕ್ಸ್ ಮಾಡಲು)
+  let globalAudioCtx = null;
+  let globalAudioSourceNode = null;
+
   const bgmAudioPlayer = document.getElementById("bgmAudio");
   const activeVid = document.getElementById("v");
   const progressBar = document.getElementById("progressBar");
@@ -412,6 +416,20 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
   };
 
+  // 🛠️ ಗ್ಲೋಬಲ್ ಆಡಿಯೋ ಸೋರ್ಸ್ ನಿರ್ವಹಣೆಯ ಫಂಕ್ಷನ್ (ಡ್ಯೂಪ್ಲಿಕೇಶನ್ ತಡೆಯಲು)
+  function initGlobalAudioContext() {
+      if (!globalAudioCtx) {
+          globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (!globalAudioSourceNode) {
+          globalAudioSourceNode = globalAudioCtx.createMediaElementSource(bgmAudioPlayer);
+      }
+      if (globalAudioCtx.state === 'suspended') {
+          globalAudioCtx.resume();
+      }
+      return { ctx: globalAudioCtx, source: globalAudioSourceNode };
+  }
+
   // 📸 LIVE CANVAS RENDERING ENGINE WITH FILTERS
   function renderLiveCameraCanvas() {
       if (cameraVideo.paused || cameraVideo.ended) return;
@@ -482,15 +500,19 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
           if (selectedAudioUrl) {
-              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-              const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
-              const destNode = audioCtx.createMediaStreamDestination();
+              const audioObj = initGlobalAudioContext();
+              const destNode = audioObj.ctx.createMediaStreamDestination();
+              
               if (cameraStream.getAudioTracks().length > 0) {
-                  const micNode = audioCtx.createMediaStreamSource(cameraStream);
+                  const micNode = audioObj.ctx.createMediaStreamSource(cameraStream);
                   micNode.connect(destNode);
               }
-              sourceNode.connect(destNode);
-              sourceNode.connect(audioCtx.destination);
+              
+              // ಹಳೆಯ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಿ ಮರುಕನೆಕ್ಟ್ ಮಾಡುವುದು
+              audioObj.source.disconnect();
+              audioObj.source.connect(destNode);
+              audioObj.source.connect(audioObj.ctx.destination);
+              
               destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
           } else {
               cameraStream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
@@ -531,12 +553,12 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               const mixedStream = new MediaStream();
               stream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
-              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-              const destNode = audioCtx.createMediaStreamDestination();
+              const audioObj = initGlobalAudioContext();
+              const destNode = audioObj.ctx.createMediaStreamDestination();
               
-              const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
-              sourceNode.connect(destNode);
-              sourceNode.connect(audioCtx.destination);
+              audioObj.source.disconnect();
+              audioObj.source.connect(destNode);
+              audioObj.source.connect(audioObj.ctx.destination);
               destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
 
               const options = { mimeType: 'video/webm;codecs=vp9,opus' };
@@ -584,7 +606,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
   // 💾 FAST LOCAL SAVE TO GALLERY (WITH FILTER AND AUDIO MERGED)
   window.triggerLocalGallerySave = async () => {
-      // ಯೂಸರ್ ಗ್ಯಾಲರಿಯಿಂದ ತಂದಿದ್ದು ಅಥವಾ ಲೈವ್ ಕ್ಯಾಮ್ ಯಾವುದಾದರೂ ಆಗಿರಬಹುದು
       if (!activeLocalVideoFile && !activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
       try {
@@ -629,7 +650,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   text: document.getElementById("caption-box").innerText
               });
           } else {
-              // ಲಿಂಕ್ ಕಾಪಿ ಮಾಡುವುದು
               if(globalReelsFeed[currentFeedIndex]) {
                   navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
                   alert("ನಿಮ್ಮ ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡಲ್ಲ, ಹಾಗಾಗಿ ರೀಲ್ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
@@ -798,6 +818,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if (selectedAudioUrl === url && !bgmAudioPlayer.paused) { bgmAudioPlayer.pause(); } 
       else {
           selectedAudioUrl = url; selectedAudioName = name; bgmAudioPlayer.src = url; bgmAudioPlayer.load();
+          
+          // ಆಡಿಯೋContext ಪ್ಲೇ ಮಾಡುವ ಮೊದಲು ಇನಿಷಿಯಲೈಸ್ ಮಾಡುವುದು
+          initGlobalAudioContext();
+
           bgmAudioPlayer.play().then(() => { if(activeVid) activeVid.muted = true; }).catch(() => { bgmAudioPlayer.muted = true; bgmAudioPlayer.play(); });
           document.getElementById("audio-tag").innerHTML = `<i class="material-icons" style="font-size:14px">music_note</i> ` + name;
       }
