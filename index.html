@@ -9,10 +9,11 @@
 
 <style>
 * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
-body { background: #000; overflow: hidden; color: white; user-select: none; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
+/* ಇಲ್ಲಿ 100vh ಬದಲಿಗೆ 100dvh ಬಳಸಲಾಗಿದೆ, ಇದರಿಂದ ಮೊಬೈಲ್ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಫೂಟರ್ ಕಟ್ ಆಗಲ್ಲ */
+body { background: #000; overflow: hidden; color: white; user-select: none; height: 100dvh; width: 100vw; display: flex; flex-direction: column; }
 
 /* AUTH SCREEN */
-#authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle, #1a1a1a, #000); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+#authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: radial-gradient(circle, #1a1a1a, #000); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
 .auth-box { text-align: center; padding: 25px; max-width: 340px; width: 85%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; backdrop-filter: blur(25px); }
 .auth-logo { font-size: 30px; font-weight: 900; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
 .auth-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: white; margin-bottom: 12px; font-size: 14px; outline: none; }
@@ -21,16 +22,16 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .signup-btn { background: transparent; color: #ffaa00; border: 1px solid rgba(255,170,0,0.4); margin-top: 10px; width: 100%; }
 
 /* LIVE IN-APP CAMERA OVERLAY */
-#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 500; display: none; flex-direction: column; justify-content: space-between; padding: 20px; }
-#cameraPreview { width: 100%; height: 75vh; object-fit: cover; border-radius: 20px; background: #222; transform: scaleX(-1); }
-.cam-controls { display: flex; justify-content: space-around; align-items: center; width: 100%; height: 15vh; }
+#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 500; display: none; flex-direction: column; justify-content: space-between; padding: 20px; }
+#cameraPreview { width: 100%; height: 75dvh; object-fit: cover; border-radius: 20px; background: #222; transform: scaleX(-1); }
+.cam-controls { display: flex; justify-content: space-around; align-items: center; width: 100%; height: 15dvh; }
 .cam-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
 .record-trigger-btn { width: 75px; height: 75px; border-radius: 50%; background: #ff0055; border: 5px solid white; box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); position: relative; cursor: pointer; }
 .record-trigger-btn.recording { background: #fff; border-color: #ff0055; animation: recPulse 1s infinite alternate; }
 @keyframes recPulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
 /* APP LAYOUT - TRUE TIKTOK FULL SCREEN */
-#appContent { display: none; height: 100vh; width: 100vw; position: relative; background: #000; }
+#appContent { display: none; height: 100dvh; width: 100vw; position: relative; background: #000; }
 #top { position: absolute; top: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); display: flex; justify-content: space-between; align-items: center; padding: 25px 15px 0 15px; z-index: 100; }
 .brand { font-weight: 900; font-size: 18px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .btn-group { display: flex; gap: 8px; }
@@ -38,13 +39,13 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .upload-btn.export-btn { background: linear-gradient(45deg, #00fff2, #0066ff); border: none; color: black; font-weight: 900; }
 
 /* FULL HEIGHT REELS CONTAINER */
-#reelsContainer { width: 100%; height: 100vh; position: absolute; top: 0; left: 0; background: #000; touch-action: none; z-index: 5; }
+#reelsContainer { width: 100%; height: calc(100dvh - 60px); position: absolute; top: 0; left: 0; background: #000; touch-action: none; z-index: 5; }
 .reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-sizing: border-box; }
 
 video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; position: relative; z-index: 1; }
 
-.progress-container { position: absolute; bottom: 65px; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
+.progress-container { position: absolute; bottom: 5px; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
 .progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
 .play-indicator { position: absolute; font-size: 50px; color: rgba(255,255,255,0.7); z-index: 30; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
 
@@ -63,19 +64,19 @@ video { width: 100%; height: 100%; object-fit: cover; background: #000; transiti
 #cyberOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 8; display: none; }
 
 /* OVERLAY TEXT - POSITIONED PERFECTLY ABOVE FOOTER */
-.info-overlay-layer { position: absolute; bottom: 85px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 6px; }
+.info-overlay-layer { position: absolute; bottom: 25px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 6px; }
 .uploader-profile-name { font-size: 15px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 4px #000; }
 .subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 8px; display: inline-block; border-left: 3px solid #ffaa00; width: fit-content; }
 .audio-name-tag { font-size: 12px; color: #ffaa00; font-weight: bold; text-shadow: 1px 1px 2px #000; display: flex; align-items: center; gap: 4px; }
 
-.social-engagement { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; gap: 15px; z-index: 20; align-items: center; }
+.social-engagement { position: absolute; right: 12px; bottom: 40px; display: flex; flex-direction: column; gap: 15px; z-index: 20; align-items: center; }
 .engage-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
 .engage-icon { width: 42px; height: 42px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; backdrop-filter: blur(10px); }
 .engage-item span { font-size: 11px; margin-top: 3px; font-weight: 600; text-shadow: 1px 1px 2px #000; }
 
-/* SLIDE UP PANEL SYSTEM - HIDDEN BY DEFAULT */
-#panel { position: absolute; bottom: -50vh; left: 0; right: 0; height: 42vh; background: rgba(12, 12, 14, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 90; padding: 15px; display: flex; flex-direction: column; border-radius: 20px 20px 0 0; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
-#panel.open { bottom: 60px; /* Slides smoothly right above footer bar */ }
+/* SLIDE UP PANEL SYSTEM */
+#panel { position: absolute; bottom: -50dvh; left: 0; right: 0; height: 42dvh; background: rgba(12, 12, 14, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 90; padding: 15px; display: flex; flex-direction: column; border-radius: 20px 20px 0 0; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
+#panel.open { bottom: 60px; }
 
 .panel-header-title { font-size: 13px; font-weight: bold; color: #ffaa00; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 .close-panel-cross { color: #888; cursor: pointer; font-size: 16px; }
@@ -111,8 +112,8 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 .song-artist-sub { font-size: 9px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .song-play-btn-circle { width: 26px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; border: none; }
 
-/* NEW TRUE TIKTOK FOOTER NAV BAR WITH STUDIO TRIGGERS */
-#bottomStudioNav { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: space-around; align-items: center; z-index: 100; padding-bottom: 5px; }
+/* TRUE TIKTOK FOOTER NAV BAR WITH POSITION FIXED FIX */
+#bottomStudioNav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: space-around; align-items: center; z-index: 500; padding-bottom: env(safe-area-inset-bottom); }
 .footer-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; cursor: pointer; font-size: 9px; font-weight: bold; width: 18%; height: 100%; transition: color 0.2s; }
 .footer-nav-item.active-trigger { color: #ffaa00; }
 .footer-nav-item .material-icons { font-size: 24px; margin-bottom: 2px; }
@@ -590,7 +591,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
   // DYNAMIC SLIDE TRIGGER FROM FOOTER BAR BUTTONS
   window.triggerPanelOpen = (tabType, labelHeader) => {
-      // Manage Active Footer CSS highlights
       document.querySelectorAll(".footer-nav-item").forEach(item => item.classList.remove("active-trigger"));
       
       const panel = document.getElementById("panel");
@@ -656,7 +656,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           });
       }
       else if (type === "overlay") {
-          // Inner Subnavigation layout for Expanded Settings Panel
           let divWrap = document.createElement("div");
           divWrap.style.gridColumn = "span 3"; divWrap.style.display="flex"; divWrap.style.gap="4px"; divWrap.style.marginBottom="5px";
           divWrap.innerHTML = `
