@@ -477,12 +477,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       } else {
           recordedChunks = [];
           
-          // ಕ್ಯಾನ್ವಾಸ್‌ನಿಂದ ಫಿಲ್ಟರ್ ಆಗಿರೋ ಲೈವ್ ವಿಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಪಡೆಯಿರಿ
           let canvasStream = cameraCanvas.captureStream(30); 
           let mixedStream = new MediaStream();
           canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
-          // ಆಡಿಯೋ ಮಿಕ್ಸಿಂಗ್ ಲಾಜಿಕ್ (ಮ್ಯೂಸಿಕ್ + ಮೈಕ್)
           if (selectedAudioUrl) {
               const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
               const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
@@ -518,39 +516,129 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // FAST LOCAL SAVE TO GALLERY OPTION
-  window.triggerLocalGallerySave = () => {
-      if(!activeLocalVideoFile) return alert("ಉಳಿಸಲು ಯಾವುದೇ ಹೊಸ ರೆಕಾರ್ಡೆಡ್ ವಿಡಿಯೋ ಇಲ್ಲ!");
-      const videoUrl = URL.createObjectURL(activeLocalVideoFile);
-      const a = document.createElement("a");
-      a.href = videoUrl;
-      a.download = `Hudko_Studio_Reel_${Date.now()}.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      alert("💾 ವಿಡಿಯೋ ನೇರವಾಗಿ ನಿಮ್ಮ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
+  // ⚡ 100% WORKING INTERNAL CANV-REC MERGER ENGINE (FOR SAVE & SHARE)
+  async function internalMergeVideoAndAudio() {
+      return new Promise((resolve, reject) => {
+          alert("⏳ ವಿಡಿಯೋಗೆ ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್‌ಗಳನ್ನು ಬ್ಯಾಕೆಂಡ್‌ನಲ್ಲಿ ಮರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಕೆಲವು ಸೆಕೆಂಡುಗಳು ಕಾಯಿರಿ!");
+          
+          try {
+              const renderCanvas = document.createElement("canvas");
+              renderCanvas.width = activeVid.videoWidth || 720;
+              renderCanvas.height = activeVid.videoHeight || 1280;
+              const ctx = renderCanvas.getContext("2d");
+
+              const stream = renderCanvas.captureStream(30);
+              const mixedStream = new MediaStream();
+              stream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
+
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              const destNode = audioCtx.createMediaStreamDestination();
+              
+              const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
+              sourceNode.connect(destNode);
+              sourceNode.connect(audioCtx.destination);
+              destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
+
+              const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+              const localRecorder = new MediaRecorder(mixedStream, options);
+              const chunks = [];
+              
+              localRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+              
+              localRecorder.onstop = () => {
+                  const finalBlob = new Blob(chunks, { type: 'video/mp4' });
+                  resolve(finalBlob);
+              };
+
+              activeVid.currentTime = 0;
+              bgmAudioPlayer.currentTime = 0;
+              
+              localRecorder.start();
+              activeVid.play();
+              bgmAudioPlayer.play();
+
+              function drawFrame() {
+                  if (activeVid.paused || activeVid.ended) {
+                      if(localRecorder.state === "recording") localRecorder.stop();
+                      return;
+                  }
+                  let baseLutString = LUT_PRESETS[currentLUT] || '';
+                  let gradingString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) sepia(${gradingSettings.sepia}%) blur(${gradingSettings.blur}px)`;
+                  ctx.filter = `${baseLutString} ${gradingString}`.trim();
+                  
+                  ctx.drawImage(activeVid, 0, 0, renderCanvas.width, renderCanvas.height);
+                  requestAnimationFrame(drawFrame);
+              }
+              
+              drawFrame();
+              
+              activeVid.onended = () => {
+                  if(localRecorder.state === "recording") localRecorder.stop();
+              };
+
+          } catch (e) {
+              reject(e);
+          }
+      });
+  }
+
+  // 💾 FAST LOCAL SAVE TO GALLERY (WITH FILTER AND AUDIO MERGED)
+  window.triggerLocalGallerySave = async () => {
+      // ಯೂಸರ್ ಗ್ಯಾಲರಿಯಿಂದ ತಂದಿದ್ದು ಅಥವಾ ಲೈವ್ ಕ್ಯಾಮ್ ಯಾವುದಾದರೂ ಆಗಿರಬಹುದು
+      if (!activeLocalVideoFile && !activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
+      
+      try {
+          let finalBlobFile;
+          if (selectedAudioUrl) {
+              finalBlobFile = await internalMergeVideoAndAudio();
+          } else {
+              finalBlobFile = activeLocalVideoFile || await fetch(activeVid.src).then(r => r.blob());
+          }
+
+          const videoUrl = URL.createObjectURL(finalBlobFile);
+          const a = document.createElement("a");
+          a.href = videoUrl;
+          a.download = `Hudko_Studio_Merged_${Date.now()}.mp4`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          alert("💾 ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್ ಮರ್ಜ್ ಆಗಿ ವಿಡಿಯೋ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
+      } catch (err) {
+          alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
+      }
   };
 
-  // DIRECT FILE SHARING (WITHOUT SERVER EXPORT LATE)
+  // ✈️ DIRECT FILE SHARING (WITH FILTER AND AUDIO MERGED DIRECT)
   window.triggerDirectFileShare = async () => {
-      if(!activeLocalVideoFile) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ಹೊಸ ವಿಡಿಯೋ ರೆಕಾರ್ಡ್ ಮಾಡಿಲ್ಲ!");
-      const fileToShare = new File([activeLocalVideoFile], `hudko_reel_${Date.now()}.mp4`, { type: "video/mp4" });
+      if (!activeLocalVideoFile && !activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
-      if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
-          try {
+      try {
+          let finalBlobFile;
+          if (selectedAudioUrl) {
+              finalBlobFile = await internalMergeVideoAndAudio();
+          } else {
+              finalBlobFile = activeLocalVideoFile || await fetch(activeVid.src).then(r => r.blob());
+          }
+
+          const fileToShare = new File([finalBlobFile], `Hudko_Share_Reel_${Date.now()}.mp4`, { type: "video/mp4" });
+          
+          if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
               await navigator.share({
                   files: [fileToShare],
                   title: 'Hudko Reels Max',
                   text: document.getElementById("caption-box").innerText
               });
-          } catch (err) {
-              console.log("ಶೇರಿಂಗ್ ಕ್ಯಾನ್ಸಲ್ ಅಥವಾ ಫೇಲ್ ಆಗಿದೆ: ", err);
+          } else {
+              // ಲಿಂಕ್ ಕಾಪಿ ಮಾಡುವುದು
+              if(globalReelsFeed[currentFeedIndex]) {
+                  navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
+                  alert("ನಿಮ್ಮ ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡಲ್ಲ, ಹಾಗಾಗಿ ರೀಲ್ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
+              } else {
+                  alert("ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ, ದಯವಿಟ್ಟು 💾 Save ಬಟನ್ ಬಳಸಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಶೇರ್ ಮಾಡಿ!");
+              }
           }
-      } else {
-          if(globalReelsFeed[currentFeedIndex]) {
-              navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
-              alert("ನಿಮ್ಮ ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡಲ್ಲ, ಹಾಗಾಗಿ ರೀಲ್ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
-          }
+      } catch (err) {
+          console.log("ಶೇರಿಂಗ್ ಕ್ಯಾನ್ಸಲ್ ಅಥವಾ ಫೇಲ್ ಆಗಿದೆ: ", err);
       }
   };
 
