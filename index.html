@@ -39,12 +39,13 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .upload-btn { background: rgba(255, 255, 255, 0.15); color: white; border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; backdrop-filter: blur(10px); }
 .upload-btn.export-btn { background: linear-gradient(45deg, #00fff2, #0066ff); border: none; color: black; font-weight: 900; }
 
-/* FULL HEIGHT REELS CONTAINER */
-#reelsContainer { width: 100%; height: calc(100dvh - 60px); position: absolute; top: 0; left: 0; background: #000; touch-action: none; z-index: 5; }
-.reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+/* FULL HEIGHT REELS CONTAINER - INSTAGRAM STYLE SCROLL */
+#reelsContainer { width: 100%; height: calc(100dvh - 60px); position: absolute; top: 0; left: 0; background: #000; overflow-y: scroll; scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch; z-index: 5; }
+#reelsContainer::-webkit-scrollbar { display: none; }
+.reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; scroll-snap-align: start; scroll-snap-stop: always; }
 .video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-sizing: border-box; }
 
-video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; position: relative; z-index: 1; }
+video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; position: relative; z-index: 1; will-change: transform, filter; }
 
 .progress-container { position: absolute; bottom: 5px; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
 .progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
@@ -383,6 +384,30 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       return { ctx: globalAudioCtx, source: globalAudioSourceNode };
   }
 
+  // INSTAGRAM & TIKTOK STYLE VIDEO SMART PLAY/PAUSE ENGINE (Intersection Observer)
+  const videoPlaybackObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+          const videoEl = entry.target;
+          if (entry.isIntersecting) {
+              // ವಿಡಿಯೋ ಸ್ಕ್ರೀನ್ ಸೆಂಟರ್‌ಗೆ ಬಂದಾಗ ಆಟೋ ಪ್ಲೇ ಆಗುತ್ತದೆ
+              videoEl.play().catch(() => {
+                  videoEl.muted = true; // ಬ್ರೌಸರ್ ಬ್ಲಾಕ್ ಮಾಡಿದರೆ ಮ್ಯೂಟ್ ಮಾಡಿ ಪ್ಲೇ ಮಾಡುತ್ತದೆ
+                  videoEl.play();
+              });
+              if (selectedAudioUrl && videoEl.id === 'v') {
+                  bgmAudioPlayer.play().catch(()=>{});
+              }
+          } else {
+              // ಸ್ಕ್ರೀನ್‌ನಿಂದ ದೂರ ಹೋದಾಗ ಪಾಸ್ ಆಗುತ್ತದೆ (ಡೇಟಾ ಮತ್ತು ಬ್ಯಾಟರಿ ಸೇವ್)
+              videoEl.pause();
+              if (videoEl.id === 'v') bgmAudioPlayer.pause();
+          }
+      });
+  }, { threshold: 0.6 }); // 60% ವಿಡಿಯೋ ಕಾಣಿಸಿದ ತಕ್ಷಣ ಆಕ್ಷನ್ ಶುರು
+
+  // ಲೋಡ್ ಆದ ತಕ್ಷಣ ಅಬ್ಸರ್ವರ್ ಆಕ್ಟಿವೇಟ್ ಮಾಡಿ
+  document.querySelectorAll('video').forEach(vid => videoPlaybackObserver.observe(vid));
+
   function renderLiveCameraCanvas() {
       if (cameraVideo.paused || cameraVideo.ended) return;
 
@@ -465,7 +490,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           if (selectedAudioUrl) {
               initGlobalAudioContext();
               bgmAudioPlayer.currentTime = 0;
-              bgmAudioPlayer.muted = false; // AUDIO FIX HERE
+              bgmAudioPlayer.muted = false; 
               bgmAudioPlayer.play().catch(e => console.log(e));
               const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
@@ -521,19 +546,17 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           const finalStream = new MediaStream();
           finalStream.addTrack(canvasStream.getVideoTracks()[0]);
 
-          // ================= AUDIO RECORDING FIX =================
           if (selectedAudioUrl) {
               initGlobalAudioContext();
-              bgmAudioPlayer.muted = false; // ಫೋರ್ಸ್ ಅನ್‌ಮ್ಯೂಟ್
+              bgmAudioPlayer.muted = false; 
               bgmAudioPlayer.currentTime = 0;
-              await bgmAudioPlayer.play().catch(e => console.log(e)); // ಆಡಿಯೋ ಸ್ಟ್ರೀಮ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಪ್ಲೇ ಆಗಲೇಬೇಕು
+              await bgmAudioPlayer.play().catch(e => console.log(e)); 
               
               const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
                   finalStream.addTrack(audioTrackStream.getAudioTracks()[0]);
               }
           }
-          // =======================================================
 
           let ext = '.mp4';
           let options = { mimeType: 'video/mp4' };
@@ -563,26 +586,20 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
           activeVid.currentTime = 0;
           activeVid.play();
-
           recorder.start();
 
-          // ================= VISUAL EFFECTS RECOVERY FIX =================
           function drawFrame() {
               if (activeVid.paused || activeVid.ended || recorder.state !== "recording") {
                   if(recorder.state === "recording") recorder.stop();
                   return;
               }
               
-              // 1. ವಿಡಿಯೋ ಮತ್ತು ಕಲರ್ ಗ್ರೇಡಿಂಗ್
               let baseLutString = LUT_PRESETS[currentLUT] || '';
               let gradingString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) sepia(${gradingSettings.sepia}%) blur(${gradingSettings.blur}px) invert(${gradingSettings.invert}%)`;
               exportCtx.filter = `${baseLutString} ${gradingString}`.trim();
-              
               exportCtx.drawImage(activeVid, 0, 0, exportCanvas.width, exportCanvas.height);
-              
-              exportCtx.filter = "none"; // ಓವರ್‌ಲೇಗಳಿಗೆ ಫಿಲ್ಟರ್ ಬೇಡ
+              exportCtx.filter = "none"; 
 
-              // 2. ಓವರ್‌ಲೇ ಎಫೆಕ್ಟ್ಸ್ (Vignette, Letterbox, Neon)
               if (overlaySettings.vignette) {
                   let grd = exportCtx.createRadialGradient(exportCanvas.width/2, exportCanvas.height/2, exportCanvas.width*0.3, exportCanvas.width/2, exportCanvas.height/2, exportCanvas.width*0.9);
                   grd.addColorStop(0, "transparent"); grd.addColorStop(1, "rgba(0,0,0,0.85)");
@@ -597,7 +614,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   exportCtx.strokeStyle = "#00fff2"; exportCtx.lineWidth = 14; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
               }
 
-              // 3. ಫ್ರೇಮ್ ಬಾರ್ಡರ್‌ಗಳು
               if (currentFrame === 'f-cinema-1') {
                   exportCtx.strokeStyle = "black"; exportCtx.lineWidth = 50; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
               } else if (currentFrame === 'f-cinema-2') {
@@ -606,7 +622,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   exportCtx.strokeStyle = "#ffaa00"; exportCtx.lineWidth = 24; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
               }
 
-              // 4. ಸಬ್‌ಟೈಟಲ್ ಟೆಕ್ಸ್ಟ್
               let subtitleText = document.getElementById("caption-box").innerText;
               if (subtitleText && subtitleText !== "ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶") {
                   exportCtx.fillStyle = "rgba(0, 0, 0, 0.6)";
@@ -616,7 +631,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   exportCtx.textAlign = "center";
                   exportCtx.fillText(subtitleText, exportCanvas.width / 2, exportCanvas.height - 80);
               }
-              // ===============================================================
 
               requestAnimationFrame(drawFrame);
           }
@@ -749,6 +763,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       applyMasterCinematicEngine();
   }
 
+  // REELS TABS SMART DETECT
   let lastTapTime = 0; let touchstartY = 0, touchendY = 0;
   document.getElementById('reelsContainer').addEventListener('touchstart', e => { touchstartY = e.changedTouches[0].screenY; });
   document.getElementById('reelsContainer').addEventListener('touchend', e => {
@@ -816,10 +831,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           });
 
           let cloudinaryData = await cloudinaryResponse.json();
-          
-          if (cloudinaryData.error) {
-              throw new Error(cloudinaryData.error.message);
-          }
+          if (cloudinaryData.error) throw new Error(cloudinaryData.error.message);
 
           let downloadUrl = cloudinaryData.secure_url; 
           if(!downloadUrl) throw new Error("Cloudinary ಅಪ್ಲೋಡ್ ಲಿಂಕ್ ಸಿಗುತ್ತಿಲ್ಲ!");
