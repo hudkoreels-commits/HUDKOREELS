@@ -119,7 +119,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 .footer-nav-item.active-trigger { color: #ffaa00; }
 .footer-nav-item .material-icons { font-size: 24px; margin-bottom: 2px; }
 
-/* 50+ LIVE ADVANCED FX MAGIC STYLES */
+/* ANIMATION FX PRESETS */
 .fx-none { animation: none !important; transform: none !important; }
 .fx-zoom-1 { animation: z1 5s infinite alternate ease-in-out; }
 .fx-zoom-2 { animation: z2 3s infinite alternate ease-in-out; }
@@ -309,6 +309,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let gradingSettings = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, invert: 0 };
   
   let activeLocalVideoFile = null;
+  let lastRenderedBlob = null; 
   let selectedAudioUrl = "";
   let selectedAudioName = "Original Sound";
   let audioSearchQuery = ""; 
@@ -320,6 +321,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let currentFacingMode = "user";
   let canvasAnimationId = null;
 
+  // SAFE AUDIO ENGINE LOCK
   let globalAudioCtx = null;
   let globalAudioSourceNode = null;
 
@@ -415,12 +417,14 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
   };
 
+  // ಸಾಲಿಡ್ ಆಡಿಯೋ ಕನೆಕ್ಷನ್ ಲಾಕ್ - ಒಂದೇ ಬಾರಿ ಕ್ರಿಯೇಟ್ ಮಾಡಲಾಗುತ್ತದೆ
   function initGlobalAudioContext() {
       if (!globalAudioCtx) {
           globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
       if (!globalAudioSourceNode) {
           globalAudioSourceNode = globalAudioCtx.createMediaElementSource(bgmAudioPlayer);
+          globalAudioSourceNode.connect(globalAudioCtx.destination);
       }
       if (globalAudioCtx.state === 'suspended') {
           globalAudioCtx.resume();
@@ -468,12 +472,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       document.getElementById("cameraRecorderContainer").style.display = "flex";
       try {
           cameraStream = await navigator.mediaDevices.getUserMedia({
-              video: { 
-                  facingMode: currentFacingMode, 
-                  width: { ideal: 1280 }, 
-                  height: { ideal: 720 },
-                  frameRate: { ideal: 30 }
-              }, 
+              video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }, 
               audio: true 
           });
           cameraVideo.srcObject = cameraStream;
@@ -509,45 +508,25 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           bgmAudioPlayer.pause();
       } else {
           recordedChunks = [];
-          
           let canvasStream = cameraCanvas.captureStream(30); 
           let mixedStream = new MediaStream();
           canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
-          if (selectedAudioUrl) {
-              const audioObj = initGlobalAudioContext();
-              const destNode = audioObj.ctx.createMediaStreamDestination();
-              
-              if (cameraStream.getAudioTracks().length > 0) {
-                  const micNode = audioObj.ctx.createMediaStreamSource(cameraStream);
-                  micNode.connect(destNode);
-              }
-              
-              audioObj.source.disconnect();
-              audioObj.source.connect(destNode);
-              audioObj.source.connect(audioObj.ctx.destination);
-              
-              destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
-          } else {
-              cameraStream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
-          }
-
-          let options = { 
-              mimeType: 'video/webm;codecs=vp9,opus',
-              videoBitsPerSecond: 5000000 
-          };
+          // ಆಂಡ್ರಾಯ್ಡ್ ಯೂನಿವರ್ಸಲ್ ರೆಕಾರ್ಡಿಂಗ್ ಫಾರ್ಮ್ಯಾಟ್ ಎಂಜಿನ್
+          let options = { mimeType: 'video/mp4' };
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 5000000 };
+              options = { mimeType: 'video/webm;codecs=h264' };
           }
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/mp4', videoBitsPerSecond: 5000000 };
+              options = { mimeType: 'video/webm' };
           }
 
-          mediaRecorder = new MediaRecorder(mixedStream, options);
+          mediaRecorder = new MediaRecorder(canvasStream, options);
           mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
           mediaRecorder.onstop = () => {
               let blob = new Blob(recordedChunks, { type: 'video/mp4' });
               activeLocalVideoFile = blob;
+              lastRenderedBlob = blob;
               activeVid.src = URL.createObjectURL(blob);
               activeVid.muted = false; 
               activeVid.load(); activeVid.play(); closeLiveCamera();
@@ -559,11 +538,20 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // 💾 2-SECOND CINEMATIC MERGE & SAVE TO GALLERY 
+  // 💾 ಯೂನಿವರ್ಸಲ್ ಆಡಿಯೋ-ವಿಡಿಯೋ ಮರ್ಜರ್ ಮತ್ತು ಗ್ಯಾಲರಿ ಡೌನ್‌ಲೋಡ್
   window.triggerLocalGallerySave = async () => {
       if (!activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
-      alert("⏳ ನಿಮ್ಮ ಸಿನಿಮ್ಯಾಟಿಕ್ ಫಿಲ್ಟರ್ ಮತ್ತು ಸಾಂಗ್ ಮರ್ಜ್ ಆಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು 2 ಸೆಕೆಂಡ್ ಕಾಯಿರಿ!");
+      // ಒಂದು ವೇಳೆ ಯಾವುದೇ ಹೆಚ್ಚುವರಿ ಎಫೆಕ್ಟ್ ಮತ್ತು ಸಾಂಗ್ ಇಲ್ಲದಿದ್ದರೆ ಒರಿಜಿನಲ್ ಫೈಲ್ ಅನ್ನೇ ಸೇವ್ ಮಾಡಿ
+      if (!selectedAudioUrl && currentLUT === 'f-none' && currentMotion === 'fx-none' && activeLocalVideoFile) {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(activeLocalVideoFile);
+          a.download = `Hudko_Studio_${Date.now()}.mp4`;
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          return;
+      }
+
+      alert("⏳ ವಿಡಿಯೋಗೆ ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್‌ಗಳನ್ನು ಬ್ಯಾಕೆಂಡ್‌ನಲ್ಲಿ ಮರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಕೆಲವು ಸೆಕೆಂಡುಗಳು ಕಾಯಿರಿ!");
 
       try {
           const exportCanvas = document.createElement("canvas");
@@ -572,41 +560,48 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           exportCanvas.width = activeVid.videoWidth || 720;
           exportCanvas.height = activeVid.videoHeight || 1280;
 
-          const stream = exportCanvas.captureStream(30);
-          const exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const dest = exportAudioCtx.createMediaStreamDestination();
+          // ಕ್ಯಾನ್ವಾಸ್‌ನಿಂದ ವಿಡಿಯೋ ಸ್ಟ್ರೀಮ್ ಪಡೆಯಿರಿ
+          const canvasStream = exportCanvas.captureStream(30);
+          const finalStream = new MediaStream();
+          finalStream.addTrack(canvasStream.getVideoTracks()[0]);
 
-          // 🎵 ಹಾಡು ಮತ್ತು ಆಡಿಯೋ ಸೇರಿಸುವುದು
+          // ಎರರ್ ಇಲ್ಲದೆ ಸಾಂಗ್ ಟ್ರ್ಯಾಕ್ ಮಕ್ಸ್ (Mux) ಮಾಡುವುದು
           if (selectedAudioUrl && !bgmAudioPlayer.paused) {
               initGlobalAudioContext();
-              if (globalAudioSourceNode) {
-                  globalAudioSourceNode.disconnect();
-                  globalAudioSourceNode.connect(dest);
-                  globalAudioSourceNode.connect(exportAudioCtx.destination);
+              // ಬ್ರೌಸರ್ ಆಡಿಯೋ ಸ್ಟ್ರೀಮ್ ಪೈಪ್ ಲೈನ್ ಜೋಡಣೆ
+              const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
+              if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
+                  finalStream.addTrack(audioTrackStream.getAudioTracks()[0]);
               }
-              dest.stream.getAudioTracks().forEach(track => stream.addTrack(track));
           }
 
-          let options = { mimeType: 'video/webm;codecs=vp9' };
-          if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/mp4' };
+          // ಆಂಡ್ರಾಯ್ಡ್ ಪ್ಲೇಬ್ಯಾಕ್ ಗಾಗಿ ಸುಧಾರಿತ ವಿಡಿಯೋ ಫಾರ್ಮ್ಯಾಟ್ ಎನ್‌ಕೋಡರ್
+          let options = { mimeType: 'video/mp4' };
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/webm;codecs=h264' };
+          }
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/webm' };
+          }
 
-          const recorder = new MediaRecorder(stream, options);
+          const recorder = new MediaRecorder(finalStream, options);
           const chunks = [];
-          recorder.ondataavailable = e => chunks.push(e.data);
+          recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
           
           recorder.onstop = () => {
               const finalBlob = new Blob(chunks, { type: 'video/mp4' });
-              const finalUrl = URL.createObjectURL(finalBlob);
+              lastRenderedBlob = finalBlob; 
               
+              const finalUrl = URL.createObjectURL(finalBlob);
               const a = document.createElement("a");
               a.href = finalUrl;
               a.download = `Hudko_Cinematic_${Date.now()}.mp4`;
               document.body.appendChild(a); a.click(); document.body.removeChild(a);
-              alert("💾 ಫಿಲ್ಟರ್ ಮತ್ತು ಮ್ಯೂಸಿಕ್ ಜೊತೆ ವಿಡಿಯೋ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
           };
 
           recorder.start();
 
+          // ಲೂಪ್ ಮೂಲಕ ಫ್ರೇಮ್ ಡ್ರಾ ಮಾಡುವ ಎಂಜಿನ್
           function drawFrame() {
               if (activeVid.paused || activeVid.ended || recorder.state !== "recording") {
                   if(recorder.state === "recording") recorder.stop();
@@ -637,7 +632,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
           drawFrame();
           
-          // ಕೇವಲ 2 ಸೆಕೆಂಡ್ ರನ್ ಮಾಡಿ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡುವುದು (Instant Merge & Download)
+          // ಕರಾರುವಕ್ಕಾಗಿ 2.5 ಸೆಕೆಂಡ್ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಇನ್‌ಸ್ಟಂಟ್ ಸೇವ್ ಮಾಡಿ
           setTimeout(() => {
               if(recorder.state === "recording") recorder.stop();
           }, 2500);
@@ -647,13 +642,20 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // ✈️ DIRECT CINEMATIC MERGE FILE SHARING 
+  // ✈️ ಡೈರೆಕ್ಟ್ ಮಾಸ್ಟರ್ ಫೈಲ್ ಶೇರಿಂಗ್ ಎಂಜಿನ್ (ವಾಟ್ಸಾಪ್, ಇನ್‌ಸ್ಟಾಗ್ರಾಮ್ ಗಾಗಿ)
   window.triggerDirectFileShare = async () => {
       if (!activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
 
       try {
-          let finalBlobFile = activeLocalVideoFile || await fetch(activeVid.src).then(r => r.blob());
-          const fileToShare = new File([finalBlobFile], `Hudko_Cinematic_Share.mp4`, { type: "video/mp4" });
+          // ರೆಂಡರ್ ಆದ ಲೇಟೆಸ್ಟ್ ಎಫೆಕ್ಟ್ ಇರುವ ಫೈಲ್ ಅಥವಾ ಒರಿಜಿನಲ್ ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ
+          let blobToShare = lastRenderedBlob || activeLocalVideoFile;
+          
+          if (!blobToShare) {
+              alert("ಶೇರ್ ಮಾಡುವ ಮುನ್ನ ದಯವಿಟ್ಟು ಒಮ್ಮೆ 💾 Save ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿಡಿಯೋ ಜನರೇಟ್ ಮಾಡಿ!");
+              return;
+          }
+
+          const fileToShare = new File([blobToShare], `Hudko_Cinematic_${Date.now()}.mp4`, { type: "video/mp4" });
           
           if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
               await navigator.share({
@@ -664,9 +666,9 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           } else {
               if(globalReelsFeed[currentFeedIndex]) {
                   navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
-                  alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ.");
+                  alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಡೈರೆಕ್ಟ್ ಫೈಲ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ.");
               } else {
-                  alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಬಳಸಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಶೇರ್ ಮಾಡಿ!");
+                  alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಬಳಸಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನಂತರ ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಶೇರ್ ಮಾಡಿ!");
               }
           }
       } catch (err) {
@@ -700,15 +702,26 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   }
 
   function renderReelFromFeed(reelData) {
-      if(!reelData) return; activeVid.src = reelData.url;
+      if(!reelData) return; 
+      
+      // ಬೇರೆಯವರ ರೀಲ್ಸ್ ಲೋಡ್ ಆಗುವಾಗ ಎರರ್ ಬರದಂತೆ ಮತ್ತು ಫೈಲ್ ಕರೆಕ್ಟಾಗಿ ಡೌನ್‌ಲೋಡ್ ಆಗುವಂತೆ ಫಿಕ್ಸ್ ಮಾಡಲಾಗಿದೆ
+      activeVid.src = reelData.url;
+      activeLocalVideoFile = null; 
+      lastRenderedBlob = null; 
+
       document.getElementById("uploader-tag").innerText = reelData.uploader ? `@${reelData.uploader}` : "@anonymous";
       document.getElementById("caption-box").innerText = reelData.subtitle || "...";
       document.getElementById("audio-tag").innerHTML = `<i class="material-icons" style="font-size:14px">music_note</i> ` + (reelData.audioTrackName || "Original Sound");
 
       if(reelData.audioTrackUrl) { 
+          selectedAudioUrl = reelData.audioTrackUrl;
+          selectedAudioName = reelData.audioTrackName || "Original Sound";
           bgmAudioPlayer.src = reelData.audioTrackUrl; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.muted = false;
           bgmAudioPlayer.play().catch(() => { bgmAudioPlayer.muted = true; bgmAudioPlayer.play(); }); activeVid.muted = true; 
-      } else { bgmAudioPlayer.pause(); activeVid.muted = false; }
+      } else { 
+          selectedAudioUrl = "";
+          bgmAudioPlayer.pause(); activeVid.muted = false; 
+      }
       
       activeVid.className = reelData.motionClass || "fx-none";
       activeVid.playbackRate = reelData.speed || 1.0;
@@ -768,16 +781,19 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   };
 
   document.getElementById("fileInput").addEventListener("change", function() {
-      let file = this.files[0]; if(!file) return; activeLocalVideoFile = file;
+      let file = this.files[0]; if(!file) return; 
+      activeLocalVideoFile = file;
+      lastRenderedBlob = null;
       bgmAudioPlayer.pause(); activeVid.src = URL.createObjectURL(file); activeVid.muted = false; activeVid.play();
   });
 
   window.exportCinematicVideo = async () => {
-      if(!activeLocalVideoFile) return alert("ಮೊದಲು ವಿಡಿಯೋ ಸೆಲೆಕ್ಟ್ ಮಾಡಿ!");
+      let fileToUpload = lastRenderedBlob || activeLocalVideoFile;
+      if(!fileToUpload) return alert("ಮೊದಲು ಗ್ಯಾಲರಿಯಿಂದ ವಿಡಿಯೋ ಸೆಲೆಕ್ಟ್ ಮಾಡಿ ಅಥವಾ ಲೈವ್ ಕ್ಯಾಮ್ ಬಳಸಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ!");
       let expBtn = document.querySelector(".export-btn"); expBtn.innerText = "⏳ Uploading...";
       try {
-          let storageRef = ref(storage, 'reels/' + Date.now() + '_' + activeLocalVideoFile.name);
-          let snap = await uploadBytes(storageRef, activeLocalVideoFile); let downloadUrl = await getDownloadURL(snap.ref);
+          let storageRef = ref(storage, 'reels/' + Date.now() + '_reel.mp4');
+          let snap = await uploadBytes(storageRef, fileToUpload); let downloadUrl = await getDownloadURL(snap.ref);
           await addDoc(collection(db, "reels"), {
               url: downloadUrl, uploader: currentUser ? currentUser.email.split('@')[0] : "user",
               subtitle: document.getElementById("caption-box").innerText, audioTrackUrl: selectedAudioUrl, audioTrackName: selectedAudioName,
@@ -791,7 +807,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
   window.triggerPanelOpen = (tabType, labelHeader) => {
       document.querySelectorAll(".footer-nav-item").forEach(item => item.classList.remove("active-trigger"));
-      
       const panel = document.getElementById("panel");
       const currentActiveFooterBtn = document.getElementById(`btn-nav-${tabType === 'frame' || tabType === 'overlay' || tabType === 'speed' || tabType === 'subtitle' ? 'more' : tabType}`);
       if(currentActiveFooterBtn) currentActiveFooterBtn.classList.add("active-trigger");
@@ -827,11 +842,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   }
 
   function playSelectedAudioTrack(url, name) {
+      initGlobalAudioContext();
       if (selectedAudioUrl === url && !bgmAudioPlayer.paused) { bgmAudioPlayer.pause(); } 
       else {
           selectedAudioUrl = url; selectedAudioName = name; bgmAudioPlayer.src = url; bgmAudioPlayer.load();
-          initGlobalAudioContext();
-
           bgmAudioPlayer.play().then(() => { if(activeVid) activeVid.muted = true; }).catch(() => { bgmAudioPlayer.muted = true; bgmAudioPlayer.play(); });
           document.getElementById("audio-tag").innerHTML = `<i class="material-icons" style="font-size:14px">music_note</i> ` + name;
       }
@@ -857,8 +871,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           });
       }
       else if (type === "overlay") {
-          let divWrap = document.createElement("div");
-          divWrap.style.gridColumn = "span 3"; divWrap.style.display="flex"; divWrap.style.gap="4px"; divWrap.style.marginBottom="5px";
+          let divWrap = document.createElement("div"); divWrap.style.gridColumn = "span 3"; divWrap.style.display="flex"; divWrap.style.gap="4px"; divWrap.style.marginBottom="5px";
           divWrap.innerHTML = `
             <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('overlay', '🎭 Overlays Engine')">Overlays</button>
             <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('frame', '🖼️ Borders Frame')">Frames</button>
