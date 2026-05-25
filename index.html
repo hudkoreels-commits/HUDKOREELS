@@ -21,12 +21,12 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .signup-btn { background: transparent; color: #ffaa00; border: 1px solid rgba(255,170,0,0.4); margin-top: 10px; width: 100%; }
 
 /* LIVE IN-APP CAMERA OVERLAY */
-#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 600; display: none; flex-direction: column; justify-content: space-between; padding: 20px; }
-#cameraContainerWrapper { width: 100%; height: 75dvh; position: relative; border-radius: 20px; overflow: hidden; background: #222; }
+#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 450; display: none; flex-direction: column; justify-content: space-between; padding: 20px; padding-bottom: 80px; }
+#cameraContainerWrapper { width: 100%; height: 80dvh; position: relative; border-radius: 20px; overflow: hidden; background: #222; }
 #cameraPreview { width: 100%; height: 100%; object-fit: cover; display: none; }
 #cameraCanvas { width: 100%; height: 100%; object-fit: cover; background: #000; }
-.cam-controls { display: flex; justify-content: space-around; align-items: center; width: 100%; height: 15dvh; }
-.cam-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+.cam-controls { display: flex; justify-content: space-around; align-items: center; width: 100%; height: 10dvh; position: absolute; bottom: 80px; left: 0; z-index: 460; }
+.cam-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; backdrop-filter: blur(10px); }
 .record-trigger-btn { width: 75px; height: 75px; border-radius: 50%; background: #ff0055; border: 5px solid white; box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); position: relative; cursor: pointer; }
 .record-trigger-btn.recording { background: #fff; border-color: #ff0055; animation: recPulse 1s infinite alternate; }
 @keyframes recPulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
@@ -76,7 +76,7 @@ video { width: 100%; height: 100%; object-fit: cover; background: #000; transiti
 .engage-item span { font-size: 11px; margin-top: 3px; font-weight: 600; text-shadow: 1px 1px 2px #000; }
 
 /* SLIDE UP PANEL SYSTEM */
-#panel { position: absolute; bottom: -50dvh; left: 0; right: 0; height: 42dvh; background: rgba(12, 12, 14, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 90; padding: 15px; display: flex; flex-direction: column; border-radius: 20px 20px 0 0; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
+#panel { position: absolute; bottom: -50dvh; left: 0; right: 0; height: 42dvh; background: rgba(12, 12, 14, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 550; padding: 15px; display: flex; flex-direction: column; border-radius: 20px 20px 0 0; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
 #panel.open { bottom: 60px; }
 
 .panel-header-title { font-size: 13px; font-weight: bold; color: #ffaa00; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -243,7 +243,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                     <div class="engage-item" onclick="triggerDirectFileShare()"><div class="engage-icon" style="color:#ffaa00;">✈️</div><span>Share</span></div>
                     <div class="engage-item" style="margin-top: 5px;" onclick="logoutApp()"><div class="engage-icon" style="color:#ff0055;">✕</div><span>Logout</span></div>
                 </div>
-                <video id="v" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
+                <video id="v" loop muted autoplay playsinline crossOrigin="anonymous" src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
             </div>
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
         </div>
@@ -321,7 +321,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let currentFacingMode = "user";
   let canvasAnimationId = null;
 
-  // SAFE AUDIO ENGINE LOCK
   let globalAudioCtx = null;
   let globalAudioSourceNode = null;
 
@@ -354,70 +353,22 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-dreamy': 'blur(0.4px) saturate(1.2) brightness(105%)',
       'f-highkey': 'brightness(135%) contrast(90%)',
       'f-lowkey': 'brightness(65%) contrast(155%)',
-      'f-polaroid': 'contrast(112%) saturate(0.85) sepia(0.15)',
-      'f-urban': 'saturate(0.6) contrast(130%) brightness(95%)',
-      'f-pastel': 'saturate(0.55) brightness(115%) contrast(95%)',
-      'f-cinematic-x': 'contrast(135%) saturate(1.15) brightness(88%)',
-      'f-toxic': 'hue-rotate(60deg) saturate(2) brightness(100%)',
-      'f-royal': 'hue-rotate(240deg) saturate(1.5) contrast(120%)',
-      'f-infrared': 'hue-rotate(310deg) saturate(2.5) contrast(140%)',
-      'f-bleach': 'contrast(170%) saturate(0.4) brightness(100%)',
-      'f-retro-grade': 'sepia(0.4) hue-rotate(340deg) contrast(115%)',
-      'f-warm-indie': 'sepia(0.2) saturate(1.4) contrast(105%)',
-      'f-teal-orange': 'hue-rotate(160deg) saturate(1.5) contrast(125%)',
-      'f-monochrome': 'grayscale(1) brightness(90%) contrast(120%)',
-      'f-sepia-dark': 'sepia(0.9) brightness(75%) contrast(130%)',
-      'f-washed-out': 'saturate(0.3) contrast(85%) brightness(110%)',
-      'f-glowing': 'brightness(120%) saturate(1.8) contrast(110%)',
-      'f-aqua-marine': 'hue-rotate(145deg) saturate(1.3)',
-      'f-crimson': 'hue-rotate(350deg) saturate(2) contrast(130%)',
-      'f-desert': 'sepia(0.6) saturate(1.1) brightness(95%)',
-      'f-forest': 'hue-rotate(100deg) saturate(1.2) brightness(85%)',
-      'f-cyber-violet': 'hue-rotate(270deg) saturate(2.2)',
-      'f-moody-vibe': 'brightness(75%) contrast(140%) saturate(0.8)',
-      'f-soft-fade': 'contrast(90%) brightness(105%) saturate(0.9)',
-      'f-deep-gold': 'sepia(0.4) contrast(140%) brightness(90%)',
-      'f-candy': 'saturate(2.5) brightness(110%)',
-      'f-shadows': 'brightness(80%) contrast(170%)',
-      'f-overexposed': 'brightness(160%) contrast(110%)',
-      'f-underexposed': 'brightness(50%) contrast(120%)',
-      'f-manga': 'grayscale(1) contrast(200%) brightness(105%)',
-      'f-vaporwave': 'hue-rotate(290deg) saturate(2) contrast(110%)',
-      'f-thriller': 'hue-rotate(120deg) brightness(75%) contrast(135%)',
-      'f-hollywood': 'contrast(125%) saturate(1.3) hue-rotate(-8deg)',
-      'f-golden-hour': 'sepia(0.35) saturate(1.6) brightness(100%)',
-      'f-neon-toxic': 'hue-rotate(80deg) saturate(3) contrast(130%)',
-      'f-vintage-chrome': 'sepia(0.5) contrast(110%) saturate(0.7)',
-      'f-steel': 'hue-rotate(200deg) grayscale(0.3) contrast(130%)',
-      'f-emerald': 'hue-rotate(115deg) saturate(1.6) contrast(105%)',
-      'f-fantasy': 'hue-rotate(210deg) saturate(1.9) brightness(115%)'
+      'f-polaroid': 'contrast(112%) saturate(0.85) sepia(0.15)'
   };
 
   const MOTION_PRESETS = [
       { id: 'fx-none', name: 'RAW ✖️' }, { id: 'fx-zoom-1', name: 'SLOW ZOOM 🔎' }, { id: 'fx-zoom-2', name: 'MID ZOOM 🔍' },
       { id: 'fx-zoom-3', name: 'MEGA ZOOM 🚀' }, { id: 'fx-shake-h', name: 'HARD SHAKE 🌋' }, { id: 'fx-shake-v', name: 'VERT SHAKE 🌪️' },
-      { id: 'fx-bounce', name: 'BASS BOUNCE 🔊' }, { id: 'fx-glitch', name: 'DIGI GLITCH 👾' }, { id: 'fx-pulse', name: 'SLOW PULSE 💓' },
-      { id: 'fx-swing', name: 'CINEMA SWING 🛸' }, { id: 'fx-wobble', name: 'WOBBLE FX 🌊' }, { id: 'fx-heartbeat', name: 'HEARTBEAT 🩸' },
-      { id: 'fx-flip-x', name: '3D ROTATE 🔄' }, { id: 'fx-ghost', name: 'GHOST MULTI 👻' }, { id: 'fx-jitter', name: 'JITTER FX 🛑' },
-      { id: 'fx-skew', name: 'SKEW MOTION 📐' }, { id: 'fx-flash', name: 'WHITE FLASH ⚡' }, { id: 'fx-float', name: 'FLOAT VIBE ☁️' },
-      { id: 'fx-spin-fast', name: 'FAST SPIN 🌀' }, { id: 'fx-vibrate', name: 'VIBRATE 📱' }, { id: 'fx-pop', name: 'POP BEAT 💥' },
-      { id: 'fx-rubber', name: 'RUBBER FX 🧸' }, { id: 'fx-blur-pulse', name: 'BLUR BEAT 🌫️' }, { id: 'fx-strobe', name: 'STROBE LIGHT 🚨' },
-      { id: 'fx-spiral', name: 'SPIRAL IN 🌀' }, { id: 'fx-dizzy', name: 'DIZZY MODE 😵' }, { id: 'fx-mega-bounce', name: 'MEGA HOP 🦘' },
-      { id: 'fx-wave', name: 'WAVE FLOW 🌊' }
+      { id: 'fx-bounce', name: 'BASS BOUNCE 🔊' }, { id: 'fx-glitch', name: 'DIGI GLITCH 👾' }, { id: 'fx-pulse', name: 'SLOW PULSE 💓' }
   ];
 
   const MASTER_FRAMES_DATABASE = {
       'none': { name: 'NO FRAME ✖️', border: 'none', shadow: 'none', padding: '0px' },
       'f-cinema-1': { name: 'CINEMA UltraWide', border: '25px solid #000', padding: '25px' },
       'f-cinema-2': { name: 'VINTAGE Border', border: '15px solid #fff', padding: '15px' },
-      'f-cinema-3': { name: 'GOLDEN Frame', border: '12px double #ffaa00', padding: '12px' },
-      'f-cinema-4': { name: 'IMAX Format', border: '30px solid #0a0a0c', padding: '30px' },
-      'f-cinema-5': { name: 'Hollywood Classic', border: '18px ridge #1f1f1f', padding: '18px' },
-      'f-social-6': { name: 'Cyberpunk Frame', border: '8px solid #00fff2', shadow: '0 0 20px #ff0055', padding: '8px' },
-      'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
+      'f-cinema-3': { name: 'GOLDEN Frame', border: '12px double #ffaa00', padding: '12px' }
   };
 
-  // ಸಾಲಿಡ್ ಆಡಿಯೋ ಕನೆಕ್ಷನ್ ಲಾಕ್ - ಒಂದೇ ಬಾರಿ ಕ್ರಿಯೇಟ್ ಮಾಡಲಾಗುತ್ತದೆ
   function initGlobalAudioContext() {
       if (!globalAudioCtx) {
           globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -457,7 +408,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           canvasCtx.filter = "none"; 
           canvasCtx.fillStyle = "rgba(0, 0, 0, 0.6)";
           canvasCtx.fillRect(30, cameraCanvas.height - 140, cameraCanvas.width - 60, 65); 
-          
           canvasCtx.fillStyle = "#ffffff";
           canvasCtx.font = "bold 28px sans-serif";
           canvasCtx.textAlign = "center";
@@ -512,7 +462,16 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           let mixedStream = new MediaStream();
           canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
-          // ಆಂಡ್ರಾಯ್ಡ್ ಯೂನಿವರ್ಸಲ್ ರೆಕಾರ್ಡಿಂಗ್ ಫಾರ್ಮ್ಯಾಟ್ ಎಂಜಿನ್
+          // ADD AUDIO TRACK TO RECORDING STREAM
+          if (selectedAudioUrl) {
+              initGlobalAudioContext();
+              bgmAudioPlayer.currentTime = 0;
+              const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
+              if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
+                  mixedStream.addTrack(audioTrackStream.getAudioTracks()[0]);
+              }
+          }
+
           let options = { mimeType: 'video/mp4' };
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
               options = { mimeType: 'video/webm;codecs=h264' };
@@ -521,10 +480,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               options = { mimeType: 'video/webm' };
           }
 
-          mediaRecorder = new MediaRecorder(canvasStream, options);
+          mediaRecorder = new MediaRecorder(mixedStream, options);
           mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
           mediaRecorder.onstop = () => {
-              let blob = new Blob(recordedChunks, { type: 'video/mp4' });
+              let blob = new Blob(recordedChunks, { type: options.mimeType });
               activeLocalVideoFile = blob;
               lastRenderedBlob = blob;
               activeVid.src = URL.createObjectURL(blob);
@@ -534,15 +493,14 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           };
           mediaRecorder.start();
           recBtn.classList.add("recording");
-          if(selectedAudioUrl) { bgmAudioPlayer.muted = false; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play().catch(()=>{}); }
+          if(selectedAudioUrl) { bgmAudioPlayer.muted = false; bgmAudioPlayer.play().catch(()=>{}); }
       }
   };
 
-  // 💾 ಯೂನಿವರ್ಸಲ್ ಆಡಿಯೋ-ವಿಡಿಯೋ ಮರ್ಜರ್ ಮತ್ತು ಗ್ಯಾಲರಿ ಡೌನ್‌ಲೋಡ್
+  // FIXED: 2-Second save issue & Remote audio-only issue
   window.triggerLocalGallerySave = async () => {
       if (!activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
-      // ಒಂದು ವೇಳೆ ಯಾವುದೇ ಹೆಚ್ಚುವರಿ ಎಫೆಕ್ಟ್ ಮತ್ತು ಸಾಂಗ್ ಇಲ್ಲದಿದ್ದರೆ ಒರಿಜಿನಲ್ ಫೈಲ್ ಅನ್ನೇ ಸೇವ್ ಮಾಡಿ
       if (!selectedAudioUrl && currentLUT === 'f-none' && currentMotion === 'fx-none' && activeLocalVideoFile) {
           const a = document.createElement("a");
           a.href = URL.createObjectURL(activeLocalVideoFile);
@@ -551,37 +509,33 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           return;
       }
 
-      alert("⏳ ವಿಡಿಯೋಗೆ ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್‌ಗಳನ್ನು ಬ್ಯಾಕೆಂಡ್‌ನಲ್ಲಿ ಮರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಕೆಲವು ಸೆಕೆಂಡುಗಳು ಕಾಯಿರಿ!");
+      alert("⏳ ಸಂಪೂರ್ಣ ವಿಡಿಯೋ ರೆಕಾರ್ಡ್ ಆಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಕಾಯಿರಿ!");
 
       try {
           const exportCanvas = document.createElement("canvas");
           const exportCtx = exportCanvas.getContext("2d");
-          
           exportCanvas.width = activeVid.videoWidth || 720;
           exportCanvas.height = activeVid.videoHeight || 1280;
 
-          // ಕ್ಯಾನ್ವಾಸ್‌ನಿಂದ ವಿಡಿಯೋ ಸ್ಟ್ರೀಮ್ ಪಡೆಯಿರಿ
           const canvasStream = exportCanvas.captureStream(30);
           const finalStream = new MediaStream();
           finalStream.addTrack(canvasStream.getVideoTracks()[0]);
 
-          // ಎರರ್ ಇಲ್ಲದೆ ಸಾಂಗ್ ಟ್ರ್ಯಾಕ್ ಮಕ್ಸ್ (Mux) ಮಾಡುವುದು
           if (selectedAudioUrl && !bgmAudioPlayer.paused) {
               initGlobalAudioContext();
-              // ಬ್ರೌಸರ್ ಆಡಿಯೋ ಸ್ಟ್ರೀಮ್ ಪೈಪ್ ಲೈನ್ ಜೋಡಣೆ
               const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
                   finalStream.addTrack(audioTrackStream.getAudioTracks()[0]);
               }
           }
 
-          // ಆಂಡ್ರಾಯ್ಡ್ ಪ್ಲೇಬ್ಯಾಕ್ ಗಾಗಿ ಸುಧಾರಿತ ವಿಡಿಯೋ ಫಾರ್ಮ್ಯಾಟ್ ಎನ್‌ಕೋಡರ್
+          let ext = '.mp4';
           let options = { mimeType: 'video/mp4' };
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/webm;codecs=h264' };
+              options = { mimeType: 'video/webm;codecs=vp8,opus' }; ext = '.webm';
           }
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/webm' };
+              options = { mimeType: 'video/webm' }; ext = '.webm';
           }
 
           const recorder = new MediaRecorder(finalStream, options);
@@ -589,19 +543,25 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
           
           recorder.onstop = () => {
-              const finalBlob = new Blob(chunks, { type: 'video/mp4' });
+              const finalBlob = new Blob(chunks, { type: options.mimeType });
               lastRenderedBlob = finalBlob; 
               
               const finalUrl = URL.createObjectURL(finalBlob);
               const a = document.createElement("a");
               a.href = finalUrl;
-              a.download = `Hudko_Cinematic_${Date.now()}.mp4`;
+              a.download = `Hudko_Cinematic_${Date.now()}${ext}`;
               document.body.appendChild(a); a.click(); document.body.removeChild(a);
+              
+              activeVid.pause(); bgmAudioPlayer.pause(); // Reset after save
           };
+
+          // Restart Video & Audio from 0
+          activeVid.currentTime = 0;
+          activeVid.play();
+          if (selectedAudioUrl) { bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play(); }
 
           recorder.start();
 
-          // ಲೂಪ್ ಮೂಲಕ ಫ್ರೇಮ್ ಡ್ರಾ ಮಾಡುವ ಎಂಜಿನ್
           function drawFrame() {
               if (activeVid.paused || activeVid.ended || recorder.state !== "recording") {
                   if(recorder.state === "recording") recorder.stop();
@@ -626,36 +586,49 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   exportCtx.fillText(subtitleText, exportCanvas.width / 2, exportCanvas.height - 80);
                   exportCtx.restore();
               }
-
               requestAnimationFrame(drawFrame);
           }
-
           drawFrame();
           
-          // ಕರಾರುವಕ್ಕಾಗಿ 2.5 ಸೆಕೆಂಡ್ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಇನ್‌ಸ್ಟಂಟ್ ಸೇವ್ ಮಾಡಿ
+          // DYNAMIC DURATION (Instead of hardcoded 2.5s)
+          let vidDuration = activeVid.duration && isFinite(activeVid.duration) && activeVid.duration > 0 ? activeVid.duration : 15;
           setTimeout(() => {
               if(recorder.state === "recording") recorder.stop();
-          }, 2500);
+          }, vidDuration * 1000);
 
       } catch (err) {
-          alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
+          alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ (CORS Issue): " + err.message);
       }
   };
 
-  // ✈️ ಡೈರೆಕ್ಟ್ ಮಾಸ್ಟರ್ ಫೈಲ್ ಶೇರಿಂಗ್ ಎಂಜಿನ್ (ವಾಟ್ಸಾಪ್, ಇನ್‌ಸ್ಟಾಗ್ರಾಮ್ ಗಾಗಿ)
+  // FIXED: Direct Share compatibility
   window.triggerDirectFileShare = async () => {
       if (!activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
 
       try {
-          // ರೆಂಡರ್ ಆದ ಲೇಟೆಸ್ಟ್ ಎಫೆಕ್ಟ್ ಇರುವ ಫೈಲ್ ಅಥವಾ ಒರಿಜಿನಲ್ ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ
           let blobToShare = lastRenderedBlob || activeLocalVideoFile;
           
           if (!blobToShare) {
-              alert("ಶೇರ್ ಮಾಡುವ ಮುನ್ನ ದಯವಿಟ್ಟು ಒಮ್ಮೆ 💾 Save ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿಡಿಯೋ ಜನರೇಟ್ ಮಾಡಿ!");
+              if (globalReelsFeed[currentFeedIndex]) {
+                 if (navigator.share) {
+                     await navigator.share({
+                        title: 'Hudko Media',
+                        text: document.getElementById("caption-box").innerText,
+                        url: globalReelsFeed[currentFeedIndex].url
+                     });
+                     return;
+                 } else {
+                     navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
+                     alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಡೈರೆಕ್ಟ್ ಫೈಲ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ.");
+                     return;
+                 }
+              }
+              alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿಡಿಯೋ ಜನರೇಟ್ ಮಾಡಿ!");
               return;
           }
 
-          const fileToShare = new File([blobToShare], `Hudko_Cinematic_${Date.now()}.mp4`, { type: "video/mp4" });
+          let ext = blobToShare.type.includes('webm') ? '.webm' : '.mp4';
+          const fileToShare = new File([blobToShare], `Hudko_Cinematic_${Date.now()}${ext}`, { type: blobToShare.type });
           
           if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
               await navigator.share({
@@ -664,19 +637,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   text: document.getElementById("caption-box").innerText
               });
           } else {
-              if(globalReelsFeed[currentFeedIndex]) {
-                  navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
-                  alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಡೈರೆಕ್ಟ್ ಫೈಲ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ.");
-              } else {
-                  alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಬಳಸಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನಂತರ ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಶೇರ್ ಮಾಡಿ!");
-              }
+              alert("ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ವಿಡಿಯೋ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡುತ್ತಿಲ್ಲ. ದಯವಿಟ್ಟು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಶೇರ್ ಮಾಡಿ.");
           }
       } catch (err) {
           console.log("ಶೇರಿಂಗ್ ಫೇಲ್ ಆಗಿದೆ: ", err);
       }
   };
 
-  // INTERACTION LOGIC
   window.loginWithEmail = async () => {
       let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
       try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert(err.message); }
@@ -703,8 +670,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
   function renderReelFromFeed(reelData) {
       if(!reelData) return; 
-      
-      // ಬೇರೆಯವರ ರೀಲ್ಸ್ ಲೋಡ್ ಆಗುವಾಗ ಎರರ್ ಬರದಂತೆ ಮತ್ತು ಫೈಲ್ ಕರೆಕ್ಟಾಗಿ ಡೌನ್‌ಲೋಡ್ ಆಗುವಂತೆ ಫಿಕ್ಸ್ ಮಾಡಲಾಗಿದೆ
       activeVid.src = reelData.url;
       activeLocalVideoFile = null; 
       lastRenderedBlob = null; 
