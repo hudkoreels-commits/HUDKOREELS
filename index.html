@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🎬 HUDKO REELS STUDIO v1200 - THE ULTIMATE MONSTER + CAMERA</title>
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
 <style>
 * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
 body { background: #000; overflow: hidden; color: white; user-select: none; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
@@ -27,22 +29,22 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .record-trigger-btn.recording { background: #fff; border-color: #ff0055; animation: recPulse 1s infinite alternate; }
 @keyframes recPulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
-/* APP LAYOUT */
-#appContent { display: none; height: 100vh; width: 100vw; position: relative; }
-#top { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 100; }
+/* APP LAYOUT - TRUE TIKTOK FULL SCREEN */
+#appContent { display: none; height: 100vh; width: 100vw; position: relative; background: #000; }
+#top { position: absolute; top: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); display: flex; justify-content: space-between; align-items: center; padding: 25px 15px 0 15px; z-index: 100; }
 .brand { font-weight: 900; font-size: 18px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .btn-group { display: flex; gap: 8px; }
-.upload-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; }
+.upload-btn { background: rgba(255, 255, 255, 0.15); color: white; border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; backdrop-filter: blur(10px); }
 .upload-btn.export-btn { background: linear-gradient(45deg, #00fff2, #0066ff); border: none; color: black; font-weight: 900; }
 
-/* REELS CONTAINER */
-#reelsContainer { width: 100%; height: 46vh; position: absolute; top: 0; left: 0; background: #000; touch-action: none; }
+/* FULL HEIGHT REELS CONTAINER */
+#reelsContainer { width: 100%; height: 100vh; position: absolute; top: 0; left: 0; background: #000; touch-action: none; z-index: 5; }
 .reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-sizing: border-box; }
 
 video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; position: relative; z-index: 1; }
 
-.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
+.progress-container { position: absolute; bottom: 65px; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
 .progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
 .play-indicator { position: absolute; font-size: 50px; color: rgba(255,255,255,0.7); z-index: 30; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
 
@@ -60,52 +62,60 @@ video { width: 100%; height: 100%; object-fit: cover; background: #000; transiti
 #gridOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none; z-index: 7; display: none; }
 #cyberOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 8; display: none; }
 
-/* OVERLAY TEXT */
-.info-overlay-layer { position: absolute; bottom: 15px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 4px; }
-.uploader-profile-name { font-size: 14px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 3px #000; }
-.subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 6px; display: inline-block; border-left: 3px solid #ffaa00; }
-.audio-name-tag { font-size: 11px; color: #ffaa00; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+/* OVERLAY TEXT - POSITIONED PERFECTLY ABOVE FOOTER */
+.info-overlay-layer { position: absolute; bottom: 85px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 6px; }
+.uploader-profile-name { font-size: 15px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 4px #000; }
+.subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 8px; display: inline-block; border-left: 3px solid #ffaa00; width: fit-content; }
+.audio-name-tag { font-size: 12px; color: #ffaa00; font-weight: bold; text-shadow: 1px 1px 2px #000; display: flex; align-items: center; gap: 4px; }
 
-.social-engagement { position: absolute; right: 12px; bottom: 15px; display: flex; flex-direction: column; gap: 12px; z-index: 20; align-items: center; }
+.social-engagement { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; gap: 15px; z-index: 20; align-items: center; }
 .engage-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.engage-icon { width: 38px; height: 38px; background: rgba(15,15,15,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; backdrop-filter: blur(10px); }
-.engage-item span { font-size: 11px; margin-top: 2px; font-weight: 600; text-shadow: 1px 1px 2px #000; }
+.engage-icon { width: 42px; height: 42px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; backdrop-filter: blur(10px); }
+.engage-item span { font-size: 11px; margin-top: 3px; font-weight: 600; text-shadow: 1px 1px 2px #000; }
 
-/* PANEL SYSTEM */
-#panel { position: absolute; bottom: 0; left: 0; right: 0; height: 54vh; background: #0c0c0e; border-top: 1px solid rgba(255,255,255,0.08); z-index: 90; padding: 12px; display: flex; flex-direction: column; border-radius: 16px 16px 0 0; }
-.tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 6px; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab { padding: 8px 14px; background: rgba(255,255,255,0.03); border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; color: #888; white-space: nowrap; }
-.tab.active { background: linear-gradient(45deg, #ffaa00, #ff5500); color: #000; }
+/* SLIDE UP PANEL SYSTEM - HIDDEN BY DEFAULT */
+#panel { position: absolute; bottom: -50vh; left: 0; right: 0; height: 42vh; background: rgba(12, 12, 14, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 90; padding: 15px; display: flex; flex-direction: column; border-radius: 20px 20px 0 0; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
+#panel.open { bottom: 60px; /* Slides smoothly right above footer bar */ }
 
-.audio-search-bar { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: white; font-size: 13px; outline: none; margin-bottom: 12px; }
+.panel-header-title { font-size: 13px; font-weight: bold; color: #ffaa00; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.close-panel-cross { color: #888; cursor: pointer; font-size: 16px; }
 
 .grid-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; overflow-y: auto; flex-grow: 1; padding-bottom: 8px; }
-.item-btn { padding: 12px 4px; font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: #cfcfcf; border-radius: 8px; cursor: pointer; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.item-btn.selected { background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none; box-shadow: 0 0 8px rgba(255,170,0,0.3); }
+.grid-content::-webkit-scrollbar { width: 3px; }
+.grid-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-.slider-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; padding-right: 4px; }
-.slider-group { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.01); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); }
+.item-btn { padding: 12px 4px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #cfcfcf; border-radius: 8px; cursor: pointer; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-btn.selected { background: linear-gradient(135deg, #ffaa00, #ff5500); color: #000; border: none; box-shadow: 0 0 10px rgba(255,170,0,0.4); }
+
+.slider-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; }
+.slider-group { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
 .slider-group label { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; font-weight: bold; }
 input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 .caption-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; }
 
-/* MUSIC LIST VIBES */
-.audio-section-wrapper { display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-bottom: 10px; }
-.playlist-scroll-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin-bottom: 12px; flex-shrink: 0; }
+/* AUDIO LIST STYLES */
+.audio-section-wrapper { display: flex; flex-direction: column; height: 100%; overflow-y: auto; }
+.audio-search-bar { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: white; font-size: 13px; outline: none; margin-bottom: 10px; }
+.playlist-scroll-row { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 10px; flex-shrink: 0; }
 .playlist-scroll-row::-webkit-scrollbar { display: none; }
-.playlist-card { flex: 0 0 100px; text-align: center; cursor: pointer; }
-.playlist-card img { width: 100%; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
-.playlist-card p { font-size: 10px; font-weight: 700; margin-top: 4px; color: #ccc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.songs-vertical-list { display: flex; flex-direction: column; gap: 8px; }
-.song-list-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); cursor: pointer; }
+.playlist-card { flex: 0 0 85px; text-align: center; cursor: pointer; }
+.playlist-card img { width: 100%; height: 60px; object-fit: cover; border-radius: 8px; }
+.playlist-card p { font-size: 10px; font-weight: 700; margin-top: 2px; color: #ccc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.songs-vertical-list { display: flex; flex-direction: column; gap: 6px; }
+.song-list-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
 .song-list-item.active-song { background: rgba(255, 170, 0, 0.15); border-color: rgba(255, 170, 0, 0.3); }
-.song-left-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; pointer-events: none; }
-.song-poster { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; background: #222; }
+.song-left-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.song-poster { width: 35px; height: 35px; object-fit: cover; border-radius: 6px; }
 .song-meta-text { display: flex; flex-direction: column; min-width: 0; }
-.song-display-title { font-size: 12px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.song-artist-sub { font-size: 10px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.song-play-btn-circle { width: 30px; height: 30px; background: rgba(255,255,255,0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; border: none; }
+.song-display-title { font-size: 11px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.song-artist-sub { font-size: 9px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.song-play-btn-circle { width: 26px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; border: none; }
+
+/* NEW TRUE TIKTOK FOOTER NAV BAR WITH STUDIO TRIGGERS */
+#bottomStudioNav { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: space-around; align-items: center; z-index: 100; padding-bottom: 5px; }
+.footer-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; cursor: pointer; font-size: 9px; font-weight: bold; width: 18%; height: 100%; transition: color 0.2s; }
+.footer-nav-item.active-trigger { color: #ffaa00; }
+.footer-nav-item .material-icons { font-size: 24px; margin-bottom: 2px; }
 
 /* 50+ LIVE ADVANCED FX MAGIC STYLES */
 .fx-none { animation: none !important; transform: none !important; }
@@ -191,7 +201,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
 <div id="appContent">
     <div id="top">
-        <h2 class="brand">🎬 HUDKO STUDIO PRO</h2>
+        <h2 class="brand">🎬 HUDKO STUDIO</h2>
         <div class="btn-group">
             <button class="upload-btn" onclick="openLiveCamera()">📸 Live Cam</button>
             <button class="upload-btn" onclick="document.getElementById('fileInput').click()">+ Gallery</button>
@@ -218,13 +228,14 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                 <div class="info-overlay-layer">
                     <span class="uploader-profile-name" id="uploader-tag">@user</span>
                     <span class="subtitle-text" id="caption-box">ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶</span>
-                    <span class="audio-name-tag" id="audio-tag">🎵 Original Sound</span>
+                    <span class="audio-name-tag" id="audio-tag"><i class="material-icons" style="font-size:14px">music_note</i> Original Sound</span>
                 </div>
 
                 <div class="social-engagement">
                     <div class="engage-item" onclick="triggerSocialAction('like')"><div class="engage-icon">❤️</div><span id="count-like">0</span></div>
                     <div class="engage-item" onclick="triggerSocialAction('comment')"><div class="engage-icon">💬</div><span id="count-comment">0</span></div>
                     <div class="engage-item" onclick="triggerSocialAction('share')"><div class="engage-icon">✈️</div><span>Share</span></div>
+                    <div class="engage-item" style="margin-top: 5px;" onclick="logoutApp()"><div class="engage-icon" style="color:#ff0055;">✕</div><span>Logout</span></div>
                 </div>
                 <video id="v" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
             </div>
@@ -233,18 +244,29 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
     </div>
 
     <div id="panel">
-        <div class="tabs">
-            <div class="tab active" id="tab-lut" onclick="switchTab('lut')">📽️ Filters (50+)</div>
-            <div class="tab" id="tab-motion" onclick="switchTab('motion')">🌀 FX Magic (50+)</div>
-            <div class="tab" id="tab-frame" onclick="switchTab('frame')">🖼️ Frames (50+)</div>
-            <div class="tab" id="tab-overlay" onclick="switchTab('overlay')">🎭 Overlays</div>
-            <div class="tab" id="tab-color" onclick="switchTab('color')">🎨 Color Grade</div>
-            <div class="tab" id="tab-audio" onclick="switchTab('audio')">🎵 Music</div>
-            <div class="tab" id="tab-speed" onclick="switchTab('speed')">⚡ Speed</div>
-            <div class="tab" id="tab-subtitle" onclick="switchTab('subtitle')">✍️ Text</div>
-            <div class="tab" style="color: #ff0055;" onclick="logoutApp()">✕</div>
+        <div class="panel-header-title">
+            <span id="panelTitleDisplay">Filters Panel</span>
+            <i class="material-icons close-panel-cross" onclick="closeStudioPanel()">close</i>
         </div>
         <div id="content"></div>
+    </div>
+
+    <div id="bottomStudioNav">
+        <div class="footer-nav-item" id="btn-nav-lut" onclick="triggerPanelOpen('lut', '📽️ Filters Presets')">
+            <i class="material-icons">movie_filter</i><span>Filters</span>
+        </div>
+        <div class="footer-nav-item" id="btn-nav-motion" onclick="triggerPanelOpen('motion', '🌀 FX Magic Engine')">
+            <i class="material-icons">auto_awesome</i><span>FX Magic</span>
+        </div>
+        <div class="footer-nav-item" id="btn-nav-audio" onclick="triggerPanelOpen('audio', '🎵 Music Selection')">
+            <i class="material-icons">library_music</i><span>Music</span>
+        </div>
+        <div class="footer-nav-item" id="btn-nav-color" onclick="triggerPanelOpen('color', '🎨 Color Correction')">
+            <i class="material-icons">tune</i><span>Grading</span>
+        </div>
+        <div class="footer-nav-item" id="btn-nav-more" onclick="triggerPanelOpen('overlay', '🎭 Overlays & Subtitles')">
+            <i class="material-icons">more_horiz</i><span>More</span>
+        </div>
     </div>
 </div>
 
@@ -379,7 +401,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
   };
 
-  // 📸 INSTAGRAM CAMERA SYSTEM WITH LIVE MIXING
+  // 📸 CAMERA ENGINE
   window.openLiveCamera = async () => {
       document.getElementById("cameraRecorderContainer").style.display = "flex";
       try {
@@ -405,7 +427,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
   window.toggleLiveRecording = () => {
       const recBtn = document.getElementById("recBtn");
-      
       if (mediaRecorder && mediaRecorder.state === "recording") {
           mediaRecorder.stop();
           recBtn.classList.remove("recording");
@@ -413,65 +434,44 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       } else {
           recordedChunks = [];
           let mixedStream = new MediaStream();
-
           cameraStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
-          // 🎵 Real-time Instagram Style Background Music Mixing & Sync Logic 
           if (selectedAudioUrl) {
               const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-              
-              // Direct Stream Processing without breaking cross-origin blockades
               const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
               const destNode = audioCtx.createMediaStreamDestination();
-              
               if (cameraStream.getAudioTracks().length > 0) {
                   const micNode = audioCtx.createMediaStreamSource(cameraStream);
-                  micNode.connect(destNode); // Mix microphone input
+                  micNode.connect(destNode);
               }
-              
-              sourceNode.connect(destNode); // Mix background music track
-              sourceNode.connect(audioCtx.destination); // Play locally so user can hear while recording
-              
+              sourceNode.connect(destNode);
+              sourceNode.connect(audioCtx.destination);
               destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
           } else {
               cameraStream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
           }
 
-          // Full Standard Multi-Codec fallbacks for Maximum compatibility on Production launch
           let options = { mimeType: 'video/webm;codecs=vp9,opus' };
-          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/webm;codecs=vp8,opus' };
-          }
-          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/mp4' };
-          }
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/webm;codecs=vp8,opus' };
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/mp4' };
 
           mediaRecorder = new MediaRecorder(mixedStream, options);
           mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-          
           mediaRecorder.onstop = () => {
               let blob = new Blob(recordedChunks, { type: 'video/mp4' });
               activeLocalVideoFile = blob;
               activeVid.src = URL.createObjectURL(blob);
               activeVid.muted = false; 
-              activeVid.load();
-              activeVid.play();
-              closeLiveCamera();
-              document.getElementById("caption-box").innerText = "ಇನ್‌ಸ್ಟಾಗ್ರಾಮ್ ಸ್ಟೈಲ್ ಕ್ಯಾಮೆರಾದಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗಿದೆ! 📸🎵";
+              activeVid.load(); activeVid.play(); closeLiveCamera();
+              document.getElementById("caption-box").innerText = "ಕ್ಯಾಮೆರಾದಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗಿದೆ! 📸🎵";
           };
-
           mediaRecorder.start();
           recBtn.classList.add("recording");
-          
-          if(selectedAudioUrl) { 
-              bgmAudioPlayer.muted = false; 
-              bgmAudioPlayer.currentTime = 0; 
-              bgmAudioPlayer.play().catch(()=>{}); 
-          }
+          if(selectedAudioUrl) { bgmAudioPlayer.muted = false; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play().catch(()=>{}); }
       }
   };
 
-  // AUTH & FEED LOGIC
+  // INTERACTION LOGIC
   window.loginWithEmail = async () => {
       let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
       try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert(err.message); }
@@ -483,7 +483,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   window.logoutApp = () => signOut(auth);
 
   onAuthStateChanged(auth, (user) => {
-      if (user) { currentUser = user; document.getElementById("authScreen").style.display = "none"; document.getElementById("appContent").style.display = "block"; loadGlobalReelsFeed(); switchTab('lut'); } 
+      if (user) { currentUser = user; document.getElementById("authScreen").style.display = "none"; document.getElementById("appContent").style.display = "block"; loadGlobalReelsFeed(); } 
       else { currentUser = null; document.getElementById("authScreen").style.display = "flex"; document.getElementById("appContent").style.display = "none"; }
   });
 
@@ -500,7 +500,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if(!reelData) return; activeVid.src = reelData.url;
       document.getElementById("uploader-tag").innerText = reelData.uploader ? `@${reelData.uploader}` : "@anonymous";
       document.getElementById("caption-box").innerText = reelData.subtitle || "...";
-      document.getElementById("audio-tag").innerText = "🎵 " + (reelData.audioTrackName || "Original Sound");
+      document.getElementById("audio-tag").innerHTML = `<i class="material-icons" style="font-size:14px">music_note</i> ` + (reelData.audioTrackName || "Original Sound");
 
       if(reelData.audioTrackUrl) { 
           bgmAudioPlayer.src = reelData.audioTrackUrl; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.muted = false;
@@ -524,7 +524,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       applyMasterCinematicEngine();
   }
 
-  // INTERACTION SYSTEM
   let lastTapTime = 0; let touchstartY = 0, touchendY = 0;
   document.getElementById('reelsContainer').addEventListener('touchstart', e => { touchstartY = e.changedTouches[0].screenY; });
   document.getElementById('reelsContainer').addEventListener('touchend', e => {
@@ -555,20 +554,15 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if(globalReelsFeed.length === 0) return;
       let currentReel = globalReelsFeed[currentFeedIndex]; 
       const reelRef = doc(db, "reels", currentReel.id);
-
       if (action === 'like') {
           await updateDoc(reelRef, { likes: arrayUnion(currentUser ? currentUser.email : "guest") });
           document.getElementById("count-like").innerText = parseInt(document.getElementById("count-like").innerText) + 1;
-      } 
-      else if (action === 'comment') {
-          let commentText = prompt("ನಿಮ್ಮ ಕಾಮೆಂಟ್:"); 
-          if(!commentText) return;
+      } else if (action === 'comment') {
+          let commentText = prompt("ನಿಮ್ಮ ಕಾಮೆಂಟ್:"); if(!commentText) return;
           await updateDoc(reelRef, { comments: arrayUnion({ user: currentUser ? currentUser.email : "Guest", text: commentText }) });
           document.getElementById("count-comment").innerText = parseInt(document.getElementById("count-comment").innerText) + 1;
-      } 
-      else if (action === 'share') {
-          navigator.clipboard.writeText(currentReel.url);
-          alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಈಗ ನೀವು ಎಲ್ಲಾದರೂ ಪೇಸ್ಟ್ ಮಾಡಬಹುದು.");
+      } else if (action === 'share') {
+          navigator.clipboard.writeText(currentReel.url); alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
       }
   };
 
@@ -583,25 +577,34 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       try {
           let storageRef = ref(storage, 'reels/' + Date.now() + '_' + activeLocalVideoFile.name);
           let snap = await uploadBytes(storageRef, activeLocalVideoFile); let downloadUrl = await getDownloadURL(snap.ref);
-          
           await addDoc(collection(db, "reels"), {
               url: downloadUrl, uploader: currentUser ? currentUser.email.split('@')[0] : "user",
               subtitle: document.getElementById("caption-box").innerText, audioTrackUrl: selectedAudioUrl, audioTrackName: selectedAudioName,
-              lutPreset: currentLUT, motionClass: currentMotion, framePresetId: currentFrame, speed: currentSpeed,
-              overlaysMap: overlaySettings,
-              bright: gradingSettings.brightness, cont: gradingSettings.contrast, sat: gradingSettings.saturate, 
-              hue: gradingSettings.hueRotate, blur: gradingSettings.blur, sepia: gradingSettings.sepia, invert: gradingSettings.invert,
+              lutPreset: currentLUT, motionClass: currentMotion, framePresetId: currentFrame, speed: currentSpeed, overlaysMap: overlaySettings,
+              bright: gradingSettings.brightness, cont: gradingSettings.contrast, sat: gradingSettings.saturate, hue: gradingSettings.hueRotate, blur: gradingSettings.blur, sepia: gradingSettings.sepia, invert: gradingSettings.invert,
               likes: [], comments: [], timestamp: Date.now()
           });
           alert("💥 ರೀಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್ಲೋಡ್ ಆಗಿದೆ!"); loadGlobalReelsFeed();
       } catch (err) { alert(err.message); } finally { expBtn.innerText = "⚡ Export"; }
   };
 
-  // DYNAMIC RENDERING FOR 50+ STYLES
-  window.switchTab = (tab) => {
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      const targetTab = document.getElementById(`tab-${tab}`);
-      if(targetTab) targetTab.classList.add("active"); renderTools(tab);
+  // DYNAMIC SLIDE TRIGGER FROM FOOTER BAR BUTTONS
+  window.triggerPanelOpen = (tabType, labelHeader) => {
+      // Manage Active Footer CSS highlights
+      document.querySelectorAll(".footer-nav-item").forEach(item => item.classList.remove("active-trigger"));
+      
+      const panel = document.getElementById("panel");
+      const currentActiveFooterBtn = document.getElementById(`btn-nav-${tabType === 'frame' || tabType === 'overlay' || tabType === 'speed' || tabType === 'subtitle' ? 'more' : tabType}`);
+      if(currentActiveFooterBtn) currentActiveFooterBtn.classList.add("active-trigger");
+
+      document.getElementById("panelTitleDisplay").innerText = labelHeader;
+      panel.classList.add("open");
+      renderTools(tabType);
+  };
+
+  window.closeStudioPanel = () => {
+      document.getElementById("panel").classList.remove("open");
+      document.querySelectorAll(".footer-nav-item").forEach(item => item.classList.remove("active-trigger"));
   };
 
   async function searchLiveWorldwideTracks(queryText) {
@@ -629,7 +632,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       else {
           selectedAudioUrl = url; selectedAudioName = name; bgmAudioPlayer.src = url; bgmAudioPlayer.load();
           bgmAudioPlayer.play().then(() => { if(activeVid) activeVid.muted = true; }).catch(() => { bgmAudioPlayer.muted = true; bgmAudioPlayer.play(); });
-          document.getElementById("audio-tag").innerText = "🎵 " + name;
+          document.getElementById("audio-tag").innerHTML = `<i class="material-icons" style="font-size:14px">music_note</i> ` + name;
       }
   }
 
@@ -652,15 +655,18 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               content.appendChild(b);
           });
       }
-      else if (type === "frame") {
-          Object.keys(MASTER_FRAMES_DATABASE).forEach(key => {
-              let b = document.createElement("button"); b.className = `item-btn ${currentFrame === key ? 'selected' : ''}`;
-              b.innerText = MASTER_FRAMES_DATABASE[key].name;
-              b.onclick = () => { currentFrame = key; applyMasterCinematicEngine(); renderTools('frame'); };
-              content.appendChild(b);
-          });
-      }
       else if (type === "overlay") {
+          // Inner Subnavigation layout for Expanded Settings Panel
+          let divWrap = document.createElement("div");
+          divWrap.style.gridColumn = "span 3"; divWrap.style.display="flex"; divWrap.style.gap="4px"; divWrap.style.marginBottom="5px";
+          divWrap.innerHTML = `
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('overlay', '🎭 Overlays Engine')">Overlays</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('frame', '🖼️ Borders Frame')">Frames</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('speed', '⚡ Speed Logic')">Speed</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('subtitle', '✍️ Add Dialogue Subtitle')">Text</button>
+          `;
+          content.appendChild(divWrap);
+
           let overlaysList = [
               { id: 'vignette', name: 'VIGNETTE 🌑' }, { id: 'grain', name: 'CINEMA GRAIN 🌫️' }, { id: 'letterbox', name: 'CINEMA BARS 🎞️' },
               { id: 'neon', name: 'NEON BORDER 💎' }, { id: 'leak', name: 'LIGHT LEAK 🌅' }, { id: 'grid', name: 'CAMERA GRID 🌐' }, { id: 'cyber', name: 'CRT LINES 📺' }
@@ -671,6 +677,57 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               b.onclick = () => { overlaySettings[o.id] = !overlaySettings[o.id]; applyMasterCinematicEngine(); renderTools('overlay'); };
               content.appendChild(b);
           });
+      }
+      else if (type === "frame") {
+          let divWrap = document.createElement("div"); divWrap.style.gridColumn = "span 3"; divWrap.style.display="flex"; divWrap.style.gap="4px"; divWrap.style.marginBottom="5px";
+          divWrap.innerHTML = `
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('overlay', '🎭 Overlays Engine')">Overlays</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('frame', '🖼️ Borders Frame')">Frames</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('speed', '⚡ Speed Logic')">Speed</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('subtitle', '✍️ Add Dialogue Subtitle')">Text</button>
+          `;
+          content.appendChild(divWrap);
+
+          Object.keys(MASTER_FRAMES_DATABASE).forEach(key => {
+              let b = document.createElement("button"); b.className = `item-btn ${currentFrame === key ? 'selected' : ''}`;
+              b.innerText = MASTER_FRAMES_DATABASE[key].name;
+              b.onclick = () => { currentFrame = key; applyMasterCinematicEngine(); renderTools('frame'); };
+              content.appendChild(b);
+          });
+      }
+      else if (type === "speed") {
+          let divWrap = document.createElement("div"); divWrap.style.gridColumn = "span 3"; divWrap.style.display="flex"; divWrap.style.gap="4px"; divWrap.style.marginBottom="5px";
+          divWrap.innerHTML = `
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('overlay', '🎭 Overlays Engine')">Overlays</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('frame', '🖼️ Borders Frame')">Frames</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('speed', '⚡ Speed Logic')">Speed</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('subtitle', '✍️ Add Dialogue Subtitle')">Text</button>
+          `;
+          content.appendChild(divWrap);
+
+          let speeds = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0];
+          speeds.forEach(s => {
+              let b = document.createElement("button"); b.className = `item-btn ${currentSpeed === s ? 'selected' : ''}`;
+              b.innerText = s === 1.0 ? "NORMAL ⚡" : `${s}x ${s < 1 ? 'SLOW 🐢' : 'FAST 🚀'}`;
+              b.onclick = () => { currentSpeed = s; activeVid.playbackRate = s; renderTools('speed'); };
+              content.appendChild(b);
+          });
+      }
+      else if (type === "subtitle") {
+          content.className = "slider-container";
+          let divWrap = document.createElement("div"); divWrap.style.display="flex"; divWrap.style.gap="4px";
+          divWrap.innerHTML = `
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('overlay', '🎭 Overlays Engine')">Overlays</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('frame', '🖼️ Borders Frame')">Frames</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('speed', '⚡ Speed Logic')">Speed</button>
+            <button class="item-btn" style="flex:1" onclick="triggerPanelOpen('subtitle', '✍️ Add Dialogue Subtitle')">Text</button>
+          `;
+          content.appendChild(divWrap);
+
+          let input = document.createElement("input"); input.type = "text"; input.className = "caption-input"; input.placeholder = "ಡೈಲಾಗ್ ಸಬ್‌ಟೈಟಲ್ ಇಲ್ಲಿ ಬರೆಯಿರಿ...";
+          input.value = document.getElementById("caption-box").innerText === "ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶" ? "" : document.getElementById("caption-box").innerText;
+          input.oninput = function() { document.getElementById("caption-box").innerText = this.value || "..."; };
+          content.appendChild(input);
       }
       else if (type === "color") {
           content.className = "slider-container";
@@ -685,15 +742,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                                <input type="range" min="${c.min}" max="${c.max}" value="${gradingSettings[c.id]}">`;
               div.querySelector("input").oninput = function() { gradingSettings[c.id] = this.value; document.getElementById(`v-${c.id}`).innerText = this.value + c.unit; applyMasterCinematicEngine(); };
               content.appendChild(div);
-          });
-       }
-      else if (type === "speed") {
-          let speeds = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0];
-          speeds.forEach(s => {
-              let b = document.createElement("button"); b.className = `item-btn ${currentSpeed === s ? 'selected' : ''}`;
-              b.innerText = s === 1.0 ? "NORMAL ⚡" : `${s}x ${s < 1 ? 'SLOW 🐢' : 'FAST 🚀'}`;
-              b.onclick = () => { currentSpeed = s; activeVid.playbackRate = s; renderTools('speed'); };
-              content.appendChild(b);
           });
        }
       else if (type === "audio") {
@@ -716,12 +764,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
           let listWrapper = document.createElement("div"); listWrapper.id = "audioListWrapper"; listWrapper.className = "songs-vertical-list";
           content.appendChild(listWrapper); searchLiveWorldwideTracks("Kannada Hits");
-      }
-      else if (type === "subtitle") {
-          content.className = "slider-container";
-          let input = document.createElement("input"); input.type = "text"; input.className = "caption-input"; input.placeholder = "ಡೈಲಾಗ್ ಸಬ್‌ಟೈಟಲ್ ಇಲ್ಲಿ ಬರೆಯಿರಿ...";
-          input.oninput = function() { document.getElementById("caption-box").innerText = this.value || "..."; };
-          content.appendChild(input);
       }
   }
 
@@ -750,10 +792,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       document.getElementById("cyberOverlay").style.display = overlaySettings.cyber ? "block" : "none";
   }
   
-  window.switchTab = switchTab; window.logoutApp = logoutApp; window.loginWithEmail = loginWithEmail;
-  window.signUpWithEmail = signUpWithEmail; window.exportCinematicVideo = exportCinematicVideo;
-  window.openLiveCamera = openLiveCamera; window.closeLiveCamera = closeLiveCamera;
-  window.flipLiveCamera = flipLiveCamera; window.toggleLiveRecording = toggleLiveRecording;
+  window.triggerPanelOpen = triggerPanelOpen; window.closeStudioPanel = closeStudioPanel;
+  window.logoutApp = logoutApp; window.loginWithEmail = loginWithEmail; window.signUpWithEmail = signUpWithEmail; 
+  window.exportCinematicVideo = exportCinematicVideo; window.openLiveCamera = openLiveCamera; 
+  window.closeLiveCamera = closeLiveCamera; window.flipLiveCamera = flipLiveCamera; window.toggleLiveRecording = toggleLiveRecording;
 </script>
 </body>
 </html>
