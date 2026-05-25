@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🎬 HUDKO REELS STUDIO v600 - THE ULTIMATE MONSTER</title>
+<title>🎬 HUDKO REELS STUDIO v1200 - THE ULTIMATE MONSTER + CAMERA</title>
 
 <style>
 * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
@@ -18,6 +18,15 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .login-btn { background: linear-gradient(45deg, #ffaa00, #ff5500); color: white; width: 100%; }
 .signup-btn { background: transparent; color: #ffaa00; border: 1px solid rgba(255,170,0,0.4); margin-top: 10px; width: 100%; }
 
+/* LIVE IN-APP CAMERA OVERLAY */
+#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 500; display: none; flex-direction: column; justify-content: space-between; padding: 20px; }
+#cameraPreview { width: 100%; height: 75vh; object-fit: cover; border-radius: 20px; background: #222; transform: scaleX(-1); }
+.cam-controls { display: flex; justify-content: space-around; align-items: center; width: 100%; height: 15vh; }
+.cam-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+.record-trigger-btn { width: 75px; height: 75px; border-radius: 50%; background: #ff0055; border: 5px solid white; box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); position: relative; cursor: pointer; }
+.record-trigger-btn.recording { background: #fff; border-color: #ff0055; animation: recPulse 1s infinite alternate; }
+@keyframes recPulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
 /* APP LAYOUT */
 #appContent { display: none; height: 100vh; width: 100vw; position: relative; }
 #top { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 100; }
@@ -26,19 +35,18 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .upload-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; }
 .upload-btn.export-btn { background: linear-gradient(45deg, #00fff2, #0066ff); border: none; color: black; font-weight: 900; }
 
-/* REELS CONTAINER - PERFECTLY PLACED VIDEO FIT */
+/* REELS CONTAINER */
 #reelsContainer { width: 100%; height: 46vh; position: absolute; top: 0; left: 0; background: #000; touch-action: none; }
 .reel { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .video-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-sizing: border-box; }
 
-/* 🛠️ FIXED: VIDEO OBJECT-FIT TO PREVENT POPPING OUT OF THE FRAME */
-video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; center: relative; z-index: 1; }
+video { width: 100%; height: 100%; object-fit: cover; background: #000; transition: filter 0.1s ease; position: relative; z-index: 1; }
 
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); z-index: 50; }
 .progress-bar { height: 100%; width: 0%; background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
 .play-indicator { position: absolute; font-size: 50px; color: rgba(255,255,255,0.7); z-index: 30; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
 
-/* FRAME MASTER OVERLAY - 100% IN-BOUND WITH BOX-SIZING FIXED */
+/* FRAME MASTER OVERLAY */
 #frameMasterOverlay { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 10; transition: all 0.2s ease; box-sizing: border-box; }
 
 /* OVERLAYS SYSTEM */
@@ -52,7 +60,7 @@ video { width: 100%; height: 100%; object-fit: cover; background: #000; transiti
 #gridOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none; z-index: 7; display: none; }
 #cyberOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 8; display: none; }
 
-/* ADJUSTED OVERLAY TEXT FOR REDUCED PADDING IMPACT */
+/* OVERLAY TEXT */
 .info-overlay-layer { position: absolute; bottom: 15px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 4px; }
 .uploader-profile-name { font-size: 14px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 3px #000; }
 .subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 6px; display: inline-block; border-left: 3px solid #ffaa00; }
@@ -146,7 +154,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 @keyframes sk1 { 0% { transform: skewX(-8deg); } 100% { transform: skewX(8deg); } }
 @keyframes fl1 { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.6); } }
 @keyframes flt1 { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
-@keyframes sp2 { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes sp2 { 0% { transform: rotate(0deg); } 100% { rotate(360deg); } }
 @keyframes vb1 { 0% { transform: translate(2px, 2px); } 100% { transform: translate(-2px, -2px); } }
 @keyframes pp1 { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.9); } }
 @keyframes rb1 { 0% { transform: scale3d(1, 1, 1); } 30% { transform: scale3d(1.25, 0.75, 1); } 40% { transform: scale3d(0.75, 1.25, 1); } 50% { transform: scale3d(1.15, 0.85, 1); } 100% { transform: scale3d(1, 1, 1); } }
@@ -160,7 +168,16 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 </head>
 <body>
 
-<audio id="bgmAudio" loop playsinline></audio>
+<audio id="bgmAudio" loop playsinline crossOrigin="anonymous"></audio>
+
+<div id="cameraRecorderContainer">
+    <video id="cameraPreview" autoplay playsinline muted></video>
+    <div class="cam-controls">
+        <button class="cam-btn" onclick="closeLiveCamera()">✕</button>
+        <button class="record-trigger-btn" id="recBtn" onclick="toggleLiveRecording()"></button>
+        <button class="cam-btn" onclick="flipLiveCamera()">🔄</button>
+    </div>
+</div>
 
 <div id="authScreen">
     <div class="auth-box">
@@ -176,7 +193,8 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
     <div id="top">
         <h2 class="brand">🎬 HUDKO STUDIO PRO</h2>
         <div class="btn-group">
-            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">+ Video</button>
+            <button class="upload-btn" onclick="openLiveCamera()">📸 Live Cam</button>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">+ Gallery</button>
             <button class="upload-btn export-btn" onclick="exportCinematicVideo()">⚡ Export</button>
         </div>
     </div>
@@ -268,6 +286,11 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let audioSearchQuery = ""; 
   let searchTimeout = null;
 
+  let cameraStream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let currentFacingMode = "user";
+
   const bgmAudioPlayer = document.getElementById("bgmAudio");
   const activeVid = document.getElementById("v");
   const progressBar = document.getElementById("progressBar");
@@ -342,18 +365,9 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       { id: 'fx-spin-fast', name: 'FAST SPIN 🌀' }, { id: 'fx-vibrate', name: 'VIBRATE 📱' }, { id: 'fx-pop', name: 'POP BEAT 💥' },
       { id: 'fx-rubber', name: 'RUBBER FX 🧸' }, { id: 'fx-blur-pulse', name: 'BLUR BEAT 🌫️' }, { id: 'fx-strobe', name: 'STROBE LIGHT 🚨' },
       { id: 'fx-spiral', name: 'SPIRAL IN 🌀' }, { id: 'fx-dizzy', name: 'DIZZY MODE 😵' }, { id: 'fx-mega-bounce', name: 'MEGA HOP 🦘' },
-      { id: 'fx-wave', name: 'WAVE FLOW 🌊' },
-      { id: 'fx-zoom-1', name: 'ZOOM VAR-2 🔍' }, { id: 'fx-zoom-2', name: 'ZOOM VAR-3 🔎' }, { id: 'fx-shake-h', name: 'SHAKE LITE 🌋' },
-      { id: 'fx-shake-v', name: 'SHAKE SLOW 🌪️' }, { id: 'fx-bounce', name: 'LOW BASS 🔊' }, { id: 'fx-glitch', name: 'MATRIX GLITCH 👾' },
-      { id: 'fx-pulse', name: 'FAST PULSE ❤️' }, { id: 'fx-swing', name: 'SWING SLOW 🛸' }, { id: 'fx-wobble', name: 'WOBBLE FAST 🌊' },
-      { id: 'fx-ghost', name: 'GHOST FAST 👻' }, { id: 'fx-jitter', name: 'MICRO JITTER 🛑' }, { id: 'fx-skew', name: 'SKEW REVERSE 📐' },
-      { id: 'fx-flash', name: 'SLOW FLASH ⚡' }, { id: 'fx-float', name: 'FLOAT FAST ☁️' }, { id: 'fx-vibrate', name: 'INTENSE VIBE 📱' },
-      { id: 'fx-pop', name: 'POP LITE 💥' }, { id: 'fx-rubber', name: 'RUBBER SLOW 🧸' }, { id: 'fx-blur-pulse', name: 'DEEP BLUR 🌫️' },
-      { id: 'fx-strobe', name: 'STROBE FAST 🚨' }, { id: 'fx-dizzy', name: 'DIZZY SLOW 😵' }, { id: 'fx-wave', name: 'WAVE FAST 🌊' },
-      { id: 'fx-mega-bounce', name: 'HOP LITE 🦘' }
+      { id: 'fx-wave', name: 'WAVE FLOW 🌊' }
   ];
 
-  /* 🛠️ FIXED CHOPPED OFFSET FRAMES - INTEGRATED BOX INDENTS WITH PADDING ADJUSTMENT IN CORE CALCULATOR */
   const MASTER_FRAMES_DATABASE = {
       'none': { name: 'NO FRAME ✖️', border: 'none', shadow: 'none', padding: '0px' },
       'f-cinema-1': { name: 'CINEMA UltraWide', border: '25px solid #000', padding: '25px' },
@@ -361,37 +375,103 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-cinema-3': { name: 'GOLDEN Frame', border: '12px double #ffaa00', padding: '12px' },
       'f-cinema-4': { name: 'IMAX Format', border: '30px solid #0a0a0c', padding: '30px' },
       'f-cinema-5': { name: 'Hollywood Classic', border: '18px ridge #1f1f1f', padding: '18px' },
-      'f-cinema-6': { name: 'Retro Theater', border: '20px solid #3a0007', padding: '20px' },
-      'f-cinema-7': { name: 'Silver Screen', border: '14px solid #e0e0e0', padding: '14px' },
-      'f-cinema-8': { name: 'Director Cut', border: '16px dashed #ff0055', padding: '16px' },
-      'f-cinema-9': { name: 'Minimal Box', border: '10px solid rgba(255,255,255,0.2)', padding: '10px' },
-      'f-cinema-10': { name: 'Thin Shadow Frame', border: '4px solid #fff', shadow: '0 0 30px rgba(0,0,0,0.8)', padding: '4px' },
-      'f-social-1': { name: 'IG Reels Border', border: '12px solid #000', shadow: 'inset 0 0 15px #ff0055', padding: '12px' },
-      'f-social-2': { name: 'TikTok Glass', border: '8px solid rgba(255,255,255,0.1)', shadow: '0 0 20px #00fff2', padding: '8px' },
-      'f-social-3': { name: 'Vlog Frame', border: '14px solid #fff', padding: '14px' },
-      'f-social-4': { name: 'Cute Pink', border: '15px solid #ff77aa', padding: '15px' },
-      'f-social-5': { name: 'Neon Glow Frame', border: '6px solid #ffaa00', shadow: '0 0 25px #ffaa00', padding: '6px' },
       'f-social-6': { name: 'Cyberpunk Frame', border: '8px solid #00fff2', shadow: '0 0 20px #ff0055', padding: '8px' },
-      'f-social-7': { name: 'Dark Aesthetic', border: '16px solid #111', shadow: 'inset 0 0 30px #000', padding: '16px' },
-      'f-social-8': { name: 'Clean White Out', border: '22px solid #ffffff', padding: '22px' },
-      'f-social-9': { name: 'Soft Blur Edges', border: '10px solid rgba(0,0,0,0.5)', shadow: '0 0 40px rgba(0,0,0,0.9)', padding: '10px' },
-      'f-social-10': { name: 'Gradient Matte', border: '14px solid #282c34', padding: '14px' },
-      'f-cam-1': { name: 'iPhone Cam View', border: '12px solid #000', shadow: '0 0 0 2px #fff', padding: '12px' },
-      'f-cam-2': { name: 'Sony Alpha Grid', border: '6px double #fff', shadow: 'inset 0 0 40px #000', padding: '6px' },
-      'f-cam-3': { name: 'RED 8K Screen', border: '14px solid #050505', shadow: '0 0 10px red', padding: '14px' },
-      'f-cam-4': { name: 'CCTV Camera', border: '10px solid #222', shadow: '0 0 50px rgba(0,255,0,0.2)', padding: '10px' },
-      'f-cam-5': { name: 'DSLR Safe Border', border: '20px solid black', shadow: '0 0 2px #00ffcc', padding: '20px' },
-      'f-retro-1': { name: 'Kodak Film Roll', border: '20px solid #000', shadow: '0 0 15px #ffaa00', padding: '20px' },
-      'f-retro-2': { name: 'Fujifilm 35mm', border: '16px solid #0b2414', padding: '16px' },
-      'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' },
-      'f-retro-4': { name: '8mm Projector', border: '25px solid #120f0a', padding: '25px' },
-      'f-retro-5': { name: 'Super 8 Vintage', border: '22px solid #1c160e', padding: '22px' }
+      'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
   };
 
-  for(let i=1; i<=20; i++) {
-      MASTER_FRAMES_DATABASE[`f-auto-gen-${i}`] = { name: `EXTRA FRAME 🖼️ #${i}`, border: `${8 + i}px solid rgba(255,255,255,0.05)`, shadow: 'none', padding: `${8 + i}px` };
-  }
+  // 📸 INSTAGRAM CAMERA SYSTEM WITH LIVE MIXING
+  window.openLiveCamera = async () => {
+      document.getElementById("cameraRecorderContainer").style.display = "flex";
+      try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: currentFacingMode, width: 720, height: 1280 }, 
+              audio: true 
+          });
+          document.getElementById("cameraPreview").srcObject = cameraStream;
+      } catch (err) { alert("ಕ್ಯಾಮೆರಾ ಪರ್ಮಿಷನ್ ನೀಡಿ: " + err.message); }
+  };
 
+  window.closeLiveCamera = () => {
+      if(cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+      document.getElementById("cameraRecorderContainer").style.display = "none";
+      bgmAudioPlayer.pause();
+  };
+
+  window.flipLiveCamera = () => {
+      currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+      document.getElementById("cameraPreview").style.transform = currentFacingMode === "user" ? "scaleX(-1)" : "none";
+      openLiveCamera();
+  };
+
+  window.toggleLiveRecording = () => {
+      const recBtn = document.getElementById("recBtn");
+      
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          recBtn.classList.remove("recording");
+          bgmAudioPlayer.pause();
+      } else {
+          recordedChunks = [];
+          let mixedStream = new MediaStream();
+
+          cameraStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
+
+          // 🎵 Real-time Instagram Style Background Music Mixing & Sync Logic 
+          if (selectedAudioUrl) {
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              
+              // Direct Stream Processing without breaking cross-origin blockades
+              const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
+              const destNode = audioCtx.createMediaStreamDestination();
+              
+              if (cameraStream.getAudioTracks().length > 0) {
+                  const micNode = audioCtx.createMediaStreamSource(cameraStream);
+                  micNode.connect(destNode); // Mix microphone input
+              }
+              
+              sourceNode.connect(destNode); // Mix background music track
+              sourceNode.connect(audioCtx.destination); // Play locally so user can hear while recording
+              
+              destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
+          } else {
+              cameraStream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
+          }
+
+          // Full Standard Multi-Codec fallbacks for Maximum compatibility on Production launch
+          let options = { mimeType: 'video/webm;codecs=vp9,opus' };
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/webm;codecs=vp8,opus' };
+          }
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/mp4' };
+          }
+
+          mediaRecorder = new MediaRecorder(mixedStream, options);
+          mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+          
+          mediaRecorder.onstop = () => {
+              let blob = new Blob(recordedChunks, { type: 'video/mp4' });
+              activeLocalVideoFile = blob;
+              activeVid.src = URL.createObjectURL(blob);
+              activeVid.muted = false; 
+              activeVid.load();
+              activeVid.play();
+              closeLiveCamera();
+              document.getElementById("caption-box").innerText = "ಇನ್‌ಸ್ಟಾಗ್ರಾಮ್ ಸ್ಟೈಲ್ ಕ್ಯಾಮೆರಾದಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗಿದೆ! 📸🎵";
+          };
+
+          mediaRecorder.start();
+          recBtn.classList.add("recording");
+          
+          if(selectedAudioUrl) { 
+              bgmAudioPlayer.muted = false; 
+              bgmAudioPlayer.currentTime = 0; 
+              bgmAudioPlayer.play().catch(()=>{}); 
+          }
+      }
+  };
+
+  // AUTH & FEED LOGIC
   window.loginWithEmail = async () => {
       let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
       try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert(err.message); }
@@ -404,7 +484,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
   onAuthStateChanged(auth, (user) => {
       if (user) { currentUser = user; document.getElementById("authScreen").style.display = "none"; document.getElementById("appContent").style.display = "block"; loadGlobalReelsFeed(); switchTab('lut'); } 
-      else { currentUser = null; document.getElementById("authScreen").style.display = "flex"; document.getElementById("authScreen").style.zIndex = "1000"; document.getElementById("appContent").style.display = "none"; }
+      else { currentUser = null; document.getElementById("authScreen").style.display = "flex"; document.getElementById("appContent").style.display = "none"; }
   });
 
   async function loadGlobalReelsFeed() {
@@ -444,6 +524,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       applyMasterCinematicEngine();
   }
 
+  // INTERACTION SYSTEM
   let lastTapTime = 0; let touchstartY = 0, touchendY = 0;
   document.getElementById('reelsContainer').addEventListener('touchstart', e => { touchstartY = e.changedTouches[0].screenY; });
   document.getElementById('reelsContainer').addEventListener('touchend', e => {
@@ -470,7 +551,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if(!activeVid.duration) return; progressBar.style.width = ((activeVid.currentTime / activeVid.duration) * 100) + "%";
   });
 
-    window.triggerSocialAction = async (action) => {
+  window.triggerSocialAction = async (action) => {
       if(globalReelsFeed.length === 0) return;
       let currentReel = globalReelsFeed[currentFeedIndex]; 
       const reelRef = doc(db, "reels", currentReel.id);
@@ -486,25 +567,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           document.getElementById("count-comment").innerText = parseInt(document.getElementById("count-comment").innerText) + 1;
       } 
       else if (action === 'share') {
-          const shareData = {
-              title: 'Hudko Media Reels',
-              text: 'Hudko Studio ದಲ್ಲಿ ಎಡಿಟ್ ಮಾಡಿದ ಈ ವಿಡಿಯೋ ನೋಡಿ!',
-              url: currentReel.url
-          };
-
-          if (navigator.share) {
-              try {
-                  await navigator.share(shareData);
-              } catch (err) {
-                  console.error('Share error:', err);
-              }
-          } else {
-              navigator.clipboard.writeText(currentReel.url);
-              alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಈಗ ನೀವು ಎಲ್ಲಾದರೂ ಪೇಸ್ಟ್ ಮಾಡಬಹುದು.");
-          }
+          navigator.clipboard.writeText(currentReel.url);
+          alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಈಗ ನೀವು ಎಲ್ಲಾದರೂ ಪೇಸ್ಟ್ ಮಾಡಬಹುದು.");
       }
   };
-
 
   document.getElementById("fileInput").addEventListener("change", function() {
       let file = this.files[0]; if(!file) return; activeLocalVideoFile = file;
@@ -531,6 +597,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       } catch (err) { alert(err.message); } finally { expBtn.innerText = "⚡ Export"; }
   };
 
+  // DYNAMIC RENDERING FOR 50+ STYLES
   window.switchTab = (tab) => {
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
       const targetTab = document.getElementById(`tab-${tab}`);
@@ -628,7 +695,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               b.onclick = () => { currentSpeed = s; activeVid.playbackRate = s; renderTools('speed'); };
               content.appendChild(b);
           });
-      }
+       }
       else if (type === "audio") {
           content.className = "audio-section-wrapper";
           let searchInput = document.createElement("input"); searchInput.type = "text"; searchInput.className = "audio-search-bar";
@@ -671,7 +738,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if(frameOverlay && wrapperMain) {
           frameOverlay.style.border = frameData.border || 'none';
           frameOverlay.style.boxShadow = frameData.shadow || 'none';
-          /* 🛠️ FIXED: DYNAMIC WRAPPER PADDING SO VIDEO SHRINKS PERFECTLY ACCORDING TO BORDER THICKNESS */
           wrapperMain.style.padding = frameData.padding || '0px';
       }
 
@@ -686,6 +752,8 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   
   window.switchTab = switchTab; window.logoutApp = logoutApp; window.loginWithEmail = loginWithEmail;
   window.signUpWithEmail = signUpWithEmail; window.exportCinematicVideo = exportCinematicVideo;
+  window.openLiveCamera = openLiveCamera; window.closeLiveCamera = closeLiveCamera;
+  window.flipLiveCamera = flipLiveCamera; window.toggleLiveRecording = toggleLiveRecording;
 </script>
 </body>
 </html>
