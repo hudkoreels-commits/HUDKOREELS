@@ -197,8 +197,8 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 <div id="authScreen">
     <div class="auth-box">
         <div class="auth-logo">HUDKO REELS MAX</div>
-        <input type="email" id="emailInput" class="auth-input" placeholder="ಇಮೇಲ್" value="test@hudko.com">
-        <input type="password" id="passInput" class="auth-input" placeholder="ಪಾಸ್‌ವರ್ಡ್‌" value="123456">
+        <input type="email" id="emailInput" class="auth-input" placeholder="ಇಮೇಲ್" value="">
+        <input type="password" id="passInput" class="auth-input" placeholder="ಪಾಸ್‌ವರ್ಡ್‌" value="">
         <button class="action-btn login-btn" onclick="loginWithEmail()">LOG IN</button>
         <button class="action-btn signup-btn" onclick="signUpWithEmail()">SIGN UP</button>
     </div>
@@ -282,6 +282,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
+  // ನಿಮ್ಮ ಒರಿಜಿನಲ್ ಲೈವ್ ಫೈರ್‌ಬೇಸ್ ಕಾನ್ಫಿಗರೇಶನ್
   const firebaseConfig = {
     apiKey: "AIzaSyBQ7V6w17s3EUR8n6KR-EZgMmRBQxAFhpM",
     authDomain: "hudkoreels-22c3d.firebaseapp.com",
@@ -497,7 +498,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // FIXED: 2-Second save issue & Remote audio-only issue
   window.triggerLocalGallerySave = async () => {
       if (!activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
@@ -552,10 +552,9 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               a.download = `Hudko_Cinematic_${Date.now()}${ext}`;
               document.body.appendChild(a); a.click(); document.body.removeChild(a);
               
-              activeVid.pause(); bgmAudioPlayer.pause(); // Reset after save
+              activeVid.pause(); bgmAudioPlayer.pause();
           };
 
-          // Restart Video & Audio from 0
           activeVid.currentTime = 0;
           activeVid.play();
           if (selectedAudioUrl) { bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play(); }
@@ -590,7 +589,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           }
           drawFrame();
           
-          // DYNAMIC DURATION (Instead of hardcoded 2.5s)
           let vidDuration = activeVid.duration && isFinite(activeVid.duration) && activeVid.duration > 0 ? activeVid.duration : 15;
           setTimeout(() => {
               if(recorder.state === "recording") recorder.stop();
@@ -601,7 +599,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // FIXED: Direct Share compatibility
   window.triggerDirectFileShare = async () => {
       if (!activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
 
@@ -645,18 +642,32 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   };
 
   window.loginWithEmail = async () => {
-      let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
+      let email = document.getElementById("emailInput").value.trim(); 
+      let pass = document.getElementById("passInput").value.trim();
+      if(!email || !pass) return alert("ದಯವಿಟ್ಟು ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ!");
       try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert(err.message); }
   };
   window.signUpWithEmail = async () => {
-      let email = document.getElementById("emailInput").value; let pass = document.getElementById("passInput").value;
+      let email = document.getElementById("emailInput").value.trim(); 
+      let pass = document.getElementById("passInput").value.trim();
+      if(!email || !pass) return alert("ದಯವಿಟ್ಟು ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ!");
       try { await createUserWithEmailAndPassword(auth, email, pass); alert("ಅಕೌಂಟ್ ರೆಡಿಯಾಗಿದೆ!"); } catch (err) { alert(err.message); }
   };
   window.logoutApp = () => signOut(auth);
 
   onAuthStateChanged(auth, (user) => {
-      if (user) { currentUser = user; document.getElementById("authScreen").style.display = "none"; document.getElementById("appContent").style.display = "block"; loadGlobalReelsFeed(); } 
-      else { currentUser = null; document.getElementById("authScreen").style.display = "flex"; document.getElementById("appContent").style.display = "none"; }
+      if (user) { 
+          currentUser = user; 
+          document.getElementById("authScreen").style.display = "none"; 
+          document.getElementById("appContent").style.display = "block"; 
+          loadGlobalReelsFeed(); 
+      } else { 
+          currentUser = null; 
+          document.getElementById("authScreen").style.display = "flex"; 
+          document.getElementById("appContent").style.display = "none"; 
+          document.getElementById("emailInput").value = "";
+          document.getElementById("passInput").value = "";
+      }
   });
 
   async function loadGlobalReelsFeed() {
@@ -752,22 +763,69 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       bgmAudioPlayer.pause(); activeVid.src = URL.createObjectURL(file); activeVid.muted = false; activeVid.play();
   });
 
+  // 🚀 ಕ್ಲೌಡಿನರಿ ಮತ್ತು ಗಿಟ್‌ಹಬ್ ಪೇಜಸ್ ಹೊಂದಾಣಿಕೆಯ ಪ್ರೊಡಕ್ಷನ್ ಫಿಕ್ಸ್ ಸೆಕ್ಷನ್
   window.exportCinematicVideo = async () => {
       let fileToUpload = lastRenderedBlob || activeLocalVideoFile;
       if(!fileToUpload) return alert("ಮೊದಲು ಗ್ಯಾಲರಿಯಿಂದ ವಿಡಿಯೋ ಸೆಲೆಕ್ಟ್ ಮಾಡಿ ಅಥವಾ ಲೈವ್ ಕ್ಯಾಮ್ ಬಳಸಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ!");
-      let expBtn = document.querySelector(".export-btn"); expBtn.innerText = "⏳ Uploading...";
+      let expBtn = document.querySelector(".export-btn"); 
+      let originalText = expBtn.innerText;
+      expBtn.innerText = "⏳ Uploading...";
+      expBtn.disabled = true;
+
       try {
-          let storageRef = ref(storage, 'reels/' + Date.now() + '_reel.mp4');
-          let snap = await uploadBytes(storageRef, fileToUpload); let downloadUrl = await getDownloadURL(snap.ref);
-          await addDoc(collection(db, "reels"), {
-              url: downloadUrl, uploader: currentUser ? currentUser.email.split('@')[0] : "user",
-              subtitle: document.getElementById("caption-box").innerText, audioTrackUrl: selectedAudioUrl, audioTrackName: selectedAudioName,
-              lutPreset: currentLUT, motionClass: currentMotion, framePresetId: currentFrame, speed: currentSpeed, overlaysMap: overlaySettings,
-              bright: gradingSettings.brightness, cont: gradingSettings.contrast, sat: gradingSettings.saturate, hue: gradingSettings.hueRotate, blur: gradingSettings.blur, sepia: gradingSettings.sepia, invert: gradingSettings.invert,
-              likes: [], comments: [], timestamp: Date.now()
+          // Cloudinary ಅನ್‌ಸೈನ್ಡ್ ಪ್ರಿಸೆಟ್ ಅಪ್ಲೋಡ್ ಲಾಜಿಕ್
+          const formData = new FormData();
+          formData.append("file", fileToUpload);
+          formData.append("upload_preset", "jncyejw0"); 
+
+          // GitHub Pages ನಲ್ಲಿ ಡೊಮೈನ್ ಇಲ್ಲದೆ ಬರುವ CORS ಬ್ಲಾಕ್ ತಡೆಯಲು credentials: "omit" ಸೇರಿಸಲಾಗಿದೆ
+          let cloudinaryResponse = await fetch("https://api.cloudinary.com/v1_1/dtcrafztp/video/upload", {
+              method: "POST",
+              body: formData,
+              credentials: "omit" 
           });
-          alert("💥 ರೀಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್ಲೋಡ್ ಆಗಿದೆ!"); loadGlobalReelsFeed();
-      } catch (err) { alert(err.message); } finally { expBtn.innerText = "⚡ Export"; }
+
+          let cloudinaryData = await cloudinaryResponse.json();
+          
+          if (cloudinaryData.error) {
+              throw new Error(cloudinaryData.error.message);
+          }
+
+          let downloadUrl = cloudinaryData.secure_url; 
+          if(!downloadUrl) throw new Error("Cloudinary ಅಪ್ಲೋಡ್ ಲಿಂಕ್ ಸಿಗುತ್ತಿಲ್ಲ!");
+
+          // ಫೈರ್‌ಬೇಸ್ ಡಾಕ್ಯುಮೆಂಟ್ ಸೇವಿಂಗ್ ಎಂಜಿನ್
+          await addDoc(collection(db, "reels"), {
+              url: downloadUrl, 
+              uploader: currentUser ? currentUser.email.split('@')[0] : "user",
+              subtitle: document.getElementById("caption-box").innerText, 
+              audioTrackUrl: selectedAudioUrl, 
+              audioTrackName: selectedAudioName,
+              lutPreset: currentLUT, 
+              motionClass: currentMotion, 
+              framePresetId: currentFrame, 
+              speed: currentSpeed, 
+              overlaysMap: overlaySettings,
+              bright: gradingSettings.brightness, 
+              cont: gradingSettings.contrast, 
+              sat: gradingSettings.saturate, 
+              hue: gradingSettings.hueRotate, 
+              blur: gradingSettings.blur, 
+              sepia: gradingSettings.sepia, 
+              invert: gradingSettings.invert,
+              likes: [], 
+              comments: [], 
+              timestamp: Date.now()
+          });
+
+          alert("💥 ರೀಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್ಲೋಡ್ ಮತ್ತು ಪಬ್ಲಿಶ್ ಆಗಿದೆ!"); 
+          loadGlobalReelsFeed();
+      } catch (err) { 
+          alert("ಅಪ್ಲೋಡ್ ದೋಷ: " + err.message); 
+      } finally { 
+          expBtn.innerText = originalText; 
+          expBtn.disabled = false;
+      }
   };
 
   window.triggerPanelOpen = (tabType, labelHeader) => {
