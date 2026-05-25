@@ -282,7 +282,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
-  // ನಿಮ್ಮ ಒರಿಜಿನಲ್ ಲೈವ್ ಫೈರ್‌ಬೇಸ್ ಕಾನ್ಫಿಗರೇಶನ್
   const firebaseConfig = {
     apiKey: "AIzaSyBQ7V6w17s3EUR8n6KR-EZgMmRBQxAFhpM",
     authDomain: "hudkoreels-22c3d.firebaseapp.com",
@@ -463,10 +462,11 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           let mixedStream = new MediaStream();
           canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
-          // ADD AUDIO TRACK TO RECORDING STREAM
           if (selectedAudioUrl) {
               initGlobalAudioContext();
               bgmAudioPlayer.currentTime = 0;
+              bgmAudioPlayer.muted = false; // AUDIO FIX HERE
+              bgmAudioPlayer.play().catch(e => console.log(e));
               const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
                   mixedStream.addTrack(audioTrackStream.getAudioTracks()[0]);
@@ -521,13 +521,19 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           const finalStream = new MediaStream();
           finalStream.addTrack(canvasStream.getVideoTracks()[0]);
 
-          if (selectedAudioUrl && !bgmAudioPlayer.paused) {
+          // ================= AUDIO RECORDING FIX =================
+          if (selectedAudioUrl) {
               initGlobalAudioContext();
+              bgmAudioPlayer.muted = false; // ಫೋರ್ಸ್ ಅನ್‌ಮ್ಯೂಟ್
+              bgmAudioPlayer.currentTime = 0;
+              await bgmAudioPlayer.play().catch(e => console.log(e)); // ಆಡಿಯೋ ಸ್ಟ್ರೀಮ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಪ್ಲೇ ಆಗಲೇಬೇಕು
+              
               const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
                   finalStream.addTrack(audioTrackStream.getAudioTracks()[0]);
               }
           }
+          // =======================================================
 
           let ext = '.mp4';
           let options = { mimeType: 'video/mp4' };
@@ -557,34 +563,61 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 
           activeVid.currentTime = 0;
           activeVid.play();
-          if (selectedAudioUrl) { bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play(); }
 
           recorder.start();
 
+          // ================= VISUAL EFFECTS RECOVERY FIX =================
           function drawFrame() {
               if (activeVid.paused || activeVid.ended || recorder.state !== "recording") {
                   if(recorder.state === "recording") recorder.stop();
                   return;
               }
               
+              // 1. ವಿಡಿಯೋ ಮತ್ತು ಕಲರ್ ಗ್ರೇಡಿಂಗ್
               let baseLutString = LUT_PRESETS[currentLUT] || '';
               let gradingString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) sepia(${gradingSettings.sepia}%) blur(${gradingSettings.blur}px) invert(${gradingSettings.invert}%)`;
               exportCtx.filter = `${baseLutString} ${gradingString}`.trim();
               
               exportCtx.drawImage(activeVid, 0, 0, exportCanvas.width, exportCanvas.height);
               
+              exportCtx.filter = "none"; // ಓವರ್‌ಲೇಗಳಿಗೆ ಫಿಲ್ಟರ್ ಬೇಡ
+
+              // 2. ಓವರ್‌ಲೇ ಎಫೆಕ್ಟ್ಸ್ (Vignette, Letterbox, Neon)
+              if (overlaySettings.vignette) {
+                  let grd = exportCtx.createRadialGradient(exportCanvas.width/2, exportCanvas.height/2, exportCanvas.width*0.3, exportCanvas.width/2, exportCanvas.height/2, exportCanvas.width*0.9);
+                  grd.addColorStop(0, "transparent"); grd.addColorStop(1, "rgba(0,0,0,0.85)");
+                  exportCtx.fillStyle = grd; exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+              }
+              if (overlaySettings.letterbox) {
+                  exportCtx.fillStyle = "black";
+                  exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height * 0.08);
+                  exportCtx.fillRect(0, exportCanvas.height * 0.92, exportCanvas.width, exportCanvas.height * 0.08);
+              }
+              if (overlaySettings.neon) {
+                  exportCtx.strokeStyle = "#00fff2"; exportCtx.lineWidth = 14; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
+              }
+
+              // 3. ಫ್ರೇಮ್ ಬಾರ್ಡರ್‌ಗಳು
+              if (currentFrame === 'f-cinema-1') {
+                  exportCtx.strokeStyle = "black"; exportCtx.lineWidth = 50; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
+              } else if (currentFrame === 'f-cinema-2') {
+                  exportCtx.strokeStyle = "white"; exportCtx.lineWidth = 30; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
+              } else if (currentFrame === 'f-cinema-3') {
+                  exportCtx.strokeStyle = "#ffaa00"; exportCtx.lineWidth = 24; exportCtx.strokeRect(0, 0, exportCanvas.width, exportCanvas.height);
+              }
+
+              // 4. ಸಬ್‌ಟೈಟಲ್ ಟೆಕ್ಸ್ಟ್
               let subtitleText = document.getElementById("caption-box").innerText;
               if (subtitleText && subtitleText !== "ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶") {
-                  exportCtx.save();
-                  exportCtx.filter = "none";
                   exportCtx.fillStyle = "rgba(0, 0, 0, 0.6)";
                   exportCtx.fillRect(20, exportCanvas.height - 120, exportCanvas.width - 40, 60);
                   exportCtx.fillStyle = "#ffffff";
                   exportCtx.font = "bold 24px sans-serif";
                   exportCtx.textAlign = "center";
                   exportCtx.fillText(subtitleText, exportCanvas.width / 2, exportCanvas.height - 80);
-                  exportCtx.restore();
               }
+              // ===============================================================
+
               requestAnimationFrame(drawFrame);
           }
           drawFrame();
@@ -763,7 +796,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       bgmAudioPlayer.pause(); activeVid.src = URL.createObjectURL(file); activeVid.muted = false; activeVid.play();
   });
 
-  // 🚀 ಕ್ಲೌಡಿನರಿ ಮತ್ತು ಗಿಟ್‌ಹಬ್ ಪೇಜಸ್ ಹೊಂದಾಣಿಕೆಯ ಪ್ರೊಡಕ್ಷನ್ ಫಿಕ್ಸ್ ಸೆಕ್ಷನ್
   window.exportCinematicVideo = async () => {
       let fileToUpload = lastRenderedBlob || activeLocalVideoFile;
       if(!fileToUpload) return alert("ಮೊದಲು ಗ್ಯಾಲರಿಯಿಂದ ವಿಡಿಯೋ ಸೆಲೆಕ್ಟ್ ಮಾಡಿ ಅಥವಾ ಲೈವ್ ಕ್ಯಾಮ್ ಬಳಸಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ!");
@@ -773,12 +805,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       expBtn.disabled = true;
 
       try {
-          // Cloudinary ಅನ್‌ಸೈನ್ಡ್ ಪ್ರಿಸೆಟ್ ಅಪ್ಲೋಡ್ ಲಾಜಿಕ್
           const formData = new FormData();
           formData.append("file", fileToUpload);
           formData.append("upload_preset", "jncyejw0"); 
 
-          // GitHub Pages ನಲ್ಲಿ ಡೊಮೈನ್ ಇಲ್ಲದೆ ಬರುವ CORS ಬ್ಲಾಕ್ ತಡೆಯಲು credentials: "omit" ಸೇರಿಸಲಾಗಿದೆ
           let cloudinaryResponse = await fetch("https://api.cloudinary.com/v1_1/dtcrafztp/video/upload", {
               method: "POST",
               body: formData,
@@ -794,7 +824,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           let downloadUrl = cloudinaryData.secure_url; 
           if(!downloadUrl) throw new Error("Cloudinary ಅಪ್ಲೋಡ್ ಲಿಂಕ್ ಸಿಗುತ್ತಿಲ್ಲ!");
 
-          // ಫೈರ್‌ಬೇಸ್ ಡಾಕ್ಯುಮೆಂಟ್ ಸೇವಿಂಗ್ ಎಂಜಿನ್
           await addDoc(collection(db, "reels"), {
               url: downloadUrl, 
               uploader: currentUser ? currentUser.email.split('@')[0] : "user",
