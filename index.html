@@ -559,34 +559,101 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // 💾 INSTANT LOCAL SAVE TO GALLERY (WITHIN 2 SECONDS)
+  // 💾 2-SECOND CINEMATIC MERGE & SAVE TO GALLERY 
   window.triggerLocalGallerySave = async () => {
-      if (!activeLocalVideoFile && !activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
+      if (!activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
-      try {
-          // ವಿಡಿಯೋ ಸ್ಟ್ರಕ್ ಆಗುವುದನ್ನು ತಡೆಯಲು ಮತ್ತು 2 ಸೆಕೆಂಡ್ ಒಳಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಡೈರೆಕ್ಟ್ ಬ್ಲಾಬ್ ಬಳಕೆ ಮಾಡಲಾಗಿದೆ
-          let finalBlobFile = activeLocalVideoFile || await fetch(activeVid.src).then(r => r.blob());
+      alert("⏳ ನಿಮ್ಮ ಸಿನಿಮ್ಯಾಟಿಕ್ ಫಿಲ್ಟರ್ ಮತ್ತು ಸಾಂಗ್ ಮರ್ಜ್ ಆಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು 2 ಸೆಕೆಂಡ್ ಕಾಯಿರಿ!");
 
-          const videoUrl = URL.createObjectURL(finalBlobFile);
-          const a = document.createElement("a");
-          a.href = videoUrl;
-          a.download = `Hudko_Studio_${Date.now()}.mp4`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          alert("💾 ವಿಡಿಯೋ ಇನ್‌ಸ್ಟಂಟ್ ಆಗಿ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
+      try {
+          const exportCanvas = document.createElement("canvas");
+          const exportCtx = exportCanvas.getContext("2d");
+          
+          exportCanvas.width = activeVid.videoWidth || 720;
+          exportCanvas.height = activeVid.videoHeight || 1280;
+
+          const stream = exportCanvas.captureStream(30);
+          const exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const dest = exportAudioCtx.createMediaStreamDestination();
+
+          // 🎵 ಹಾಡು ಮತ್ತು ಆಡಿಯೋ ಸೇರಿಸುವುದು
+          if (selectedAudioUrl && !bgmAudioPlayer.paused) {
+              initGlobalAudioContext();
+              if (globalAudioSourceNode) {
+                  globalAudioSourceNode.disconnect();
+                  globalAudioSourceNode.connect(dest);
+                  globalAudioSourceNode.connect(exportAudioCtx.destination);
+              }
+              dest.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+          }
+
+          let options = { mimeType: 'video/webm;codecs=vp9' };
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/mp4' };
+
+          const recorder = new MediaRecorder(stream, options);
+          const chunks = [];
+          recorder.ondataavailable = e => chunks.push(e.data);
+          
+          recorder.onstop = () => {
+              const finalBlob = new Blob(chunks, { type: 'video/mp4' });
+              const finalUrl = URL.createObjectURL(finalBlob);
+              
+              const a = document.createElement("a");
+              a.href = finalUrl;
+              a.download = `Hudko_Cinematic_${Date.now()}.mp4`;
+              document.body.appendChild(a); a.click(); document.body.removeChild(a);
+              alert("💾 ಫಿಲ್ಟರ್ ಮತ್ತು ಮ್ಯೂಸಿಕ್ ಜೊತೆ ವಿಡಿಯೋ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
+          };
+
+          recorder.start();
+
+          function drawFrame() {
+              if (activeVid.paused || activeVid.ended || recorder.state !== "recording") {
+                  if(recorder.state === "recording") recorder.stop();
+                  return;
+              }
+              
+              let baseLutString = LUT_PRESETS[currentLUT] || '';
+              let gradingString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) sepia(${gradingSettings.sepia}%) blur(${gradingSettings.blur}px) invert(${gradingSettings.invert}%)`;
+              exportCtx.filter = `${baseLutString} ${gradingString}`.trim();
+              
+              exportCtx.drawImage(activeVid, 0, 0, exportCanvas.width, exportCanvas.height);
+              
+              let subtitleText = document.getElementById("caption-box").innerText;
+              if (subtitleText && subtitleText !== "ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶") {
+                  exportCtx.save();
+                  exportCtx.filter = "none";
+                  exportCtx.fillStyle = "rgba(0, 0, 0, 0.6)";
+                  exportCtx.fillRect(20, exportCanvas.height - 120, exportCanvas.width - 40, 60);
+                  exportCtx.fillStyle = "#ffffff";
+                  exportCtx.font = "bold 24px sans-serif";
+                  exportCtx.textAlign = "center";
+                  exportCtx.fillText(subtitleText, exportCanvas.width / 2, exportCanvas.height - 80);
+                  exportCtx.restore();
+              }
+
+              requestAnimationFrame(drawFrame);
+          }
+
+          drawFrame();
+          
+          // ಕೇವಲ 2 ಸೆಕೆಂಡ್ ರನ್ ಮಾಡಿ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡುವುದು (Instant Merge & Download)
+          setTimeout(() => {
+              if(recorder.state === "recording") recorder.stop();
+          }, 2500);
+
       } catch (err) {
           alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
       }
   };
 
-  // ✈️ INSTANT DIRECT FILE SHARING (WITHIN 2 SECONDS)
+  // ✈️ DIRECT CINEMATIC MERGE FILE SHARING 
   window.triggerDirectFileShare = async () => {
-      if (!activeLocalVideoFile && !activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
-      
+      if (!activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
+
       try {
           let finalBlobFile = activeLocalVideoFile || await fetch(activeVid.src).then(r => r.blob());
-          const fileToShare = new File([finalBlobFile], `Hudko_Share_${Date.now()}.mp4`, { type: "video/mp4" });
+          const fileToShare = new File([finalBlobFile], `Hudko_Cinematic_Share.mp4`, { type: "video/mp4" });
           
           if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
               await navigator.share({
@@ -597,13 +664,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           } else {
               if(globalReelsFeed[currentFeedIndex]) {
                   navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
-                  alert("ನಿಮ್ಮ ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡಲ್ಲ, ಹಾಗಾಗಿ ರೀಲ್ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
+                  alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ.");
               } else {
-                  alert("ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ, ದಯವಿಟ್ಟು 💾 Save ಬಟನ್ ಬಳಸಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಶೇರ್ ಮಾಡಿ!");
+                  alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಬಳಸಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಶೇರ್ ಮಾಡಿ!");
               }
           }
       } catch (err) {
-          console.log("ಶೇರಿಂಗ್ ಕ್ಯಾನ್ಸಲ್ ಅಥವಾ ಫೇಲ್ ಆಗಿದೆ: ", err);
+          console.log("ಶೇರಿಂಗ್ ಫೇಲ್ ಆಗಿದೆ: ", err);
       }
   };
 
