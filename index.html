@@ -320,7 +320,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let currentFacingMode = "user";
   let canvasAnimationId = null;
 
-  // Web Audio API ಗ್ಲೋಬಲ್ ನಿರ್ವಹಣೆ (ಎರರ್ ಫಿಕ್ಸ್ ಮಾಡಲು)
+  // Web Audio API ಗ್ಲೋಬಲ್ ನಿರ್ವಹಣೆ
   let globalAudioCtx = null;
   let globalAudioSourceNode = null;
 
@@ -416,7 +416,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
   };
 
-  // 🛠️ ಗ್ಲೋಬಲ್ ಆಡಿಯೋ ಸೋರ್ಸ್ ನಿರ್ವಹಣೆಯ ಫಂಕ್ಷನ್ (ಡ್ಯೂಪ್ಲಿಕೇಶನ್ ತಡೆಯಲು)
   function initGlobalAudioContext() {
       if (!globalAudioCtx) {
           globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -430,7 +429,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       return { ctx: globalAudioCtx, source: globalAudioSourceNode };
   }
 
-  // 📸 LIVE CANVAS RENDERING ENGINE WITH FILTERS
+  // 📸 FIXED LIVE CANVAS RENDERING WITH DIALOGUE TEXT & FILTERS
   function renderLiveCameraCanvas() {
       if (cameraVideo.paused || cameraVideo.ended) return;
 
@@ -450,22 +449,42 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           canvasCtx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
       }
 
+      // ✍️ ಲೈವ್ ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿ ಟೆಕ್ಸ್ಟ್ ಮರ್ಜ್ ಮಾಡುವ ಲಾಜಿಕ್
+      let subtitleText = document.getElementById("caption-box").innerText;
+      if (subtitleText && subtitleText !== "ಮಾಸ್ಟರ್ ಎಡಿಟ್ ಶುರುಮಾಡಿ... 🎶" && subtitleText !== "...") {
+          canvasCtx.save();
+          canvasCtx.filter = "none"; 
+          canvasCtx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          canvasCtx.fillRect(30, cameraCanvas.height - 140, cameraCanvas.width - 60, 65); 
+          
+          canvasCtx.fillStyle = "#ffffff";
+          canvasCtx.font = "bold 28px sans-serif";
+          canvasCtx.textAlign = "center";
+          canvasCtx.fillText(subtitleText, cameraCanvas.width / 2, cameraCanvas.height - 98);
+          canvasCtx.restore();
+      }
+
       canvasAnimationId = requestAnimationFrame(renderLiveCameraCanvas);
   }
 
-  // CAMERA ENGINE
+  // HD CAMERA CAPTURE ENGINE
   window.openLiveCamera = async () => {
       document.getElementById("cameraRecorderContainer").style.display = "flex";
       try {
           cameraStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: currentFacingMode, width: { ideal: 720 }, height: { ideal: 1280 } }, 
+              video: { 
+                  facingMode: currentFacingMode, 
+                  width: { ideal: 1280 }, 
+                  height: { ideal: 720 },
+                  frameRate: { ideal: 30 }
+              }, 
               audio: true 
           });
           cameraVideo.srcObject = cameraStream;
           cameraVideo.onloadedmetadata = () => {
               cameraVideo.play();
-              cameraCanvas.width = cameraVideo.videoWidth || 720;
-              cameraCanvas.height = cameraVideo.videoHeight || 1280;
+              cameraCanvas.width = cameraVideo.videoWidth || 1280;
+              cameraCanvas.height = cameraVideo.videoHeight || 720;
               renderLiveCameraCanvas();
           };
       } catch (err) { alert("ಕ್ಯಾಮೆರಾ ಪರ್ಮಿಷನ್ ನೀಡಿ: " + err.message); }
@@ -486,6 +505,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       openLiveCamera();
   };
 
+  // 🔥 FIXED LIVE REELS RECORDING ENGINE (HIGH QUALITY + SONG MERGED)
   window.toggleLiveRecording = () => {
       const recBtn = document.getElementById("recBtn");
       if (mediaRecorder && mediaRecorder.state === "recording") {
@@ -508,7 +528,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   micNode.connect(destNode);
               }
               
-              // ಹಳೆಯ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಿ ಮರುಕನೆಕ್ಟ್ ಮಾಡುವುದು
               audioObj.source.disconnect();
               audioObj.source.connect(destNode);
               audioObj.source.connect(audioObj.ctx.destination);
@@ -518,9 +537,17 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               cameraStream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
           }
 
-          let options = { mimeType: 'video/webm;codecs=vp9,opus' };
-          if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/webm;codecs=vp8,opus' };
-          if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/mp4' };
+          // ವಿಡಿಯೋ ಸ್ಟ್ರಕ್ ಆಗುವುದನ್ನು ತಡೆಯಲು 5Mbps ಹೈ-ಬಿಟ್‌ರೇಟ್ ಕಾನ್ಫಿಗರೇಶನ್
+          let options = { 
+              mimeType: 'video/webm;codecs=vp9,opus',
+              videoBitsPerSecond: 5000000 
+          };
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 5000000 };
+          }
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/mp4', videoBitsPerSecond: 5000000 };
+          }
 
           mediaRecorder = new MediaRecorder(mixedStream, options);
           mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
@@ -538,15 +565,15 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
-  // ⚡ 100% WORKING INTERNAL CANV-REC MERGER ENGINE (FOR SAVE & SHARE)
+  // ⚡ INTERNAL CANV-REC MERGER ENGINE (FOR SAVING HIGH-QUALITY GALLERY REELS)
   async function internalMergeVideoAndAudio() {
       return new Promise((resolve, reject) => {
           alert("⏳ ವಿಡಿಯೋಗೆ ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್‌ಗಳನ್ನು ಬ್ಯಾಕೆಂಡ್‌ನಲ್ಲಿ ಮರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಕೆಲವು ಸೆಕೆಂಡುಗಳು ಕಾಯಿರಿ!");
           
           try {
               const renderCanvas = document.createElement("canvas");
-              renderCanvas.width = activeVid.videoWidth || 720;
-              renderCanvas.height = activeVid.videoHeight || 1280;
+              renderCanvas.width = activeVid.videoWidth || 1280;
+              renderCanvas.height = activeVid.videoHeight || 720;
               const ctx = renderCanvas.getContext("2d");
 
               const stream = renderCanvas.captureStream(30);
@@ -561,12 +588,14 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               audioObj.source.connect(audioObj.ctx.destination);
               destNode.stream.getAudioTracks().forEach(track => mixedStream.addTrack(track));
 
-              const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+              const options = { 
+                  mimeType: 'video/webm;codecs=vp9,opus',
+                  videoBitsPerSecond: 5000000
+              };
               const localRecorder = new MediaRecorder(mixedStream, options);
               const chunks = [];
               
               localRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-              
               localRecorder.onstop = () => {
                   const finalBlob = new Blob(chunks, { type: 'video/mp4' });
                   resolve(finalBlob);
@@ -604,7 +633,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       });
   }
 
-  // 💾 FAST LOCAL SAVE TO GALLERY (WITH FILTER AND AUDIO MERGED)
+  // 💾 FAST LOCAL SAVE TO GALLERY (HIGH QUALITY)
   window.triggerLocalGallerySave = async () => {
       if (!activeLocalVideoFile && !activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
@@ -623,13 +652,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          alert("💾 ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್ ಮರ್ಜ್ ಆಗಿ ವಿಡಿಯೋ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
+          alert("💾 ಸಾಂಗ್ ಮತ್ತು ಫಿಲ್ಟರ್ ಮರ್ಜ್ ಆಗಿ ಹೈ-ಕ್ವಾಲಿಟಿ ವಿಡಿಯೋ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
       } catch (err) {
           alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
       }
   };
 
-  // ✈️ DIRECT FILE SHARING (WITH FILTER AND AUDIO MERGED DIRECT)
+  // ✈️ DIRECT FILE SHARING
   window.triggerDirectFileShare = async () => {
       if (!activeLocalVideoFile && !activeVid.src) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
@@ -818,8 +847,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       if (selectedAudioUrl === url && !bgmAudioPlayer.paused) { bgmAudioPlayer.pause(); } 
       else {
           selectedAudioUrl = url; selectedAudioName = name; bgmAudioPlayer.src = url; bgmAudioPlayer.load();
-          
-          // ಆಡಿಯೋContext ಪ್ಲೇ ಮಾಡುವ ಮೊದಲು ಇನಿಷಿಯಲೈಸ್ ಮಾಡುವುದು
           initGlobalAudioContext();
 
           bgmAudioPlayer.play().then(() => { if(activeVid) activeVid.muted = true; }).catch(() => { bgmAudioPlayer.muted = true; bgmAudioPlayer.play(); });
