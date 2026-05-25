@@ -384,28 +384,25 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       return { ctx: globalAudioCtx, source: globalAudioSourceNode };
   }
 
-  // INSTAGRAM & TIKTOK STYLE VIDEO SMART PLAY/PAUSE ENGINE (Intersection Observer)
+  // INSTAGRAM & TIKTOK STYLE VIDEO SMART PLAY/PAUSE ENGINE
   const videoPlaybackObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
           const videoEl = entry.target;
           if (entry.isIntersecting) {
-              // ವಿಡಿಯೋ ಸ್ಕ್ರೀನ್ ಸೆಂಟರ್‌ಗೆ ಬಂದಾಗ ಆಟೋ ಪ್ಲೇ ಆಗುತ್ತದೆ
               videoEl.play().catch(() => {
-                  videoEl.muted = true; // ಬ್ರೌಸರ್ ಬ್ಲಾಕ್ ಮಾಡಿದರೆ ಮ್ಯೂಟ್ ಮಾಡಿ ಪ್ಲೇ ಮಾಡುತ್ತದೆ
+                  videoEl.muted = true; 
                   videoEl.play();
               });
               if (selectedAudioUrl && videoEl.id === 'v') {
                   bgmAudioPlayer.play().catch(()=>{});
               }
           } else {
-              // ಸ್ಕ್ರೀನ್‌ನಿಂದ ದೂರ ಹೋದಾಗ ಪಾಸ್ ಆಗುತ್ತದೆ (ಡೇಟಾ ಮತ್ತು ಬ್ಯಾಟರಿ ಸೇವ್)
               videoEl.pause();
               if (videoEl.id === 'v') bgmAudioPlayer.pause();
           }
       });
-  }, { threshold: 0.6 }); // 60% ವಿಡಿಯೋ ಕಾಣಿಸಿದ ತಕ್ಷಣ ಆಕ್ಷನ್ ಶುರು
+  }, { threshold: 0.6 });
 
-  // ಲೋಡ್ ಆದ ತಕ್ಷಣ ಅಬ್ಸರ್ವರ್ ಆಕ್ಟಿವೇಟ್ ಮಾಡಿ
   document.querySelectorAll('video').forEach(vid => videoPlaybackObserver.observe(vid));
 
   function renderLiveCameraCanvas() {
@@ -487,20 +484,26 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           let mixedStream = new MediaStream();
           canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
+          // ಲೈವ್ ಕ್ಯಾಮೆರಾದಲ್ಲೂ ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಮಿಕ್ಸ್ ಮಾಡುವ ವ್ಯವಸ್ಥೆ
           if (selectedAudioUrl) {
               initGlobalAudioContext();
               bgmAudioPlayer.currentTime = 0;
               bgmAudioPlayer.muted = false; 
               bgmAudioPlayer.play().catch(e => console.log(e));
-              const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
+              const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : bgmAudioPlayer.mozCaptureStream ? bgmAudioPlayer.mozCaptureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
                   mixedStream.addTrack(audioTrackStream.getAudioTracks()[0]);
               }
+          } else {
+              if (cameraStream && cameraStream.getAudioTracks().length > 0) {
+                  mixedStream.addTrack(cameraStream.getAudioTracks()[0]);
+              }
           }
 
-          let options = { mimeType: 'video/mp4' };
+          // ಆಂಡ್ರಾಯ್ಡ್ ಮತ್ತು ವಾಟ್ಸಾಪ್ ಸಪೋರ್ಟೆಡ್ ಯೂನಿವರ್ಸಲ್ ಕೋಡೆಕ್ ಫೋರ್ಸ್
+          let options = { mimeType: 'video/mp4;codecs=avc1.42E01E,mp4a.40.2' };
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-              options = { mimeType: 'video/webm;codecs=h264' };
+              options = { mimeType: 'video/webm;codecs=h264,aac' };
           }
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
               options = { mimeType: 'video/webm' };
@@ -523,18 +526,11 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       }
   };
 
+  // 100% ಗ್ಯಾಲರಿ ಮತ್ತು ವಾಟ್ಸಾಪ್ ಫಿಕ್ಸ್ ಆಗಿರುವ ಸೇವ್ ಆಪ್ಷನ್
   window.triggerLocalGallerySave = async () => {
       if (!activeVid.src) return alert("ಉಳಿಸಲು ಯಾವುದೇ ವಿಡಿಯೋ ಇಲ್ಲ!");
       
-      if (!selectedAudioUrl && currentLUT === 'f-none' && currentMotion === 'fx-none' && activeLocalVideoFile) {
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(activeLocalVideoFile);
-          a.download = `Hudko_Studio_${Date.now()}.mp4`;
-          document.body.appendChild(a); a.click(); document.body.removeChild(a);
-          return;
-      }
-
-      alert("⏳ ಸಂಪೂರ್ಣ ವಿಡಿಯೋ ರೆಕಾರ್ಡ್ ಆಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಕಾಯಿರಿ!");
+      alert("⏳ ಪ್ರೊಸೆಸಿಂಗ್ ಮತ್ತು ಆಡಿಯೋ ಸಿಂಕ್ ಆಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು 5 ಸೆಕೆಂಡ್ ಕಾಯಿರಿ!");
 
       try {
           const exportCanvas = document.createElement("canvas");
@@ -546,20 +542,35 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           const finalStream = new MediaStream();
           finalStream.addTrack(canvasStream.getVideoTracks()[0]);
 
+          // ಆಡಿಯೋ ಇಂಜೆಕ್ಷನ್ ಇಂಜಿನ್ ಸುಧಾರಿಸಲಾಗಿದೆ
+          let hasAudioTrack = false;
           if (selectedAudioUrl) {
               initGlobalAudioContext();
               bgmAudioPlayer.muted = false; 
               bgmAudioPlayer.currentTime = 0;
               await bgmAudioPlayer.play().catch(e => console.log(e)); 
               
-              const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : null;
+              const audioTrackStream = bgmAudioPlayer.captureStream ? bgmAudioPlayer.captureStream() : bgmAudioPlayer.mozCaptureStream ? bgmAudioPlayer.mozCaptureStream() : null;
               if (audioTrackStream && audioTrackStream.getAudioTracks().length > 0) {
                   finalStream.addTrack(audioTrackStream.getAudioTracks()[0]);
+                  hasAudioTrack = true;
+              }
+          } else {
+              // ವೀಡಿಯೋದ ಒರಿಜಿನಲ್ ಸೌಂಡ್ ಅಟ್ಯಾಚ್ ಮಾಡಲು
+              const nativeAudioStream = activeVid.captureStream ? activeVid.captureStream() : activeVid.mozCaptureStream ? activeVid.mozCaptureStream() : null;
+              if (nativeAudioStream && nativeAudioStream.getAudioTracks().length > 0) {
+                  finalStream.addTrack(nativeAudioStream.getAudioTracks()[0]);
+                  hasAudioTrack = true;
               }
           }
 
+          // ಮೊಬೈಲ್ ಗ್ಯಾಲರಿ ಮತ್ತು ವಾಟ್ಸಾಪ್ ಕ್ರಾಶ್ ತಡೆಯಲು ಹೈ-ಕ್ವಾಲಿಟಿ MP4 ಹಾರ್ಡ್ ಕೋಡೆಕ್ ಸೆಟ್ಟಿಂಗ್ಸ್
           let ext = '.mp4';
-          let options = { mimeType: 'video/mp4' };
+          let options = { mimeType: 'video/mp4;codecs=avc1.42E01E,mp4a.40.2' };
+          
+          if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+              options = { mimeType: 'video/webm;codecs=h264,aac' }; 
+          }
           if (!MediaRecorder.isTypeSupported(options.mimeType)) {
               options = { mimeType: 'video/webm;codecs=vp8,opus' }; ext = '.webm';
           }
@@ -578,10 +589,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               const finalUrl = URL.createObjectURL(finalBlob);
               const a = document.createElement("a");
               a.href = finalUrl;
-              a.download = `Hudko_Cinematic_${Date.now()}${ext}`;
+              a.download = `Hudko_Studio_${Date.now()}${ext}`;
               document.body.appendChild(a); a.click(); document.body.removeChild(a);
               
               activeVid.pause(); bgmAudioPlayer.pause();
+              // ರಿಯಲ್ ಟೈಮ್ ಪ್ಲೇಬ್ಯಾಕ್ ಮರುಸ್ಥಾಪನೆ
+              activeVid.currentTime = 0; activeVid.play();
+              if (selectedAudioUrl) bgmAudioPlayer.play().catch(()=>{});
           };
 
           activeVid.currentTime = 0;
@@ -636,13 +650,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           }
           drawFrame();
           
-          let vidDuration = activeVid.duration && isFinite(activeVid.duration) && activeVid.duration > 0 ? activeVid.duration : 15;
+          let vidDuration = activeVid.duration && isFinite(activeVid.duration) && activeVid.duration > 0 ? activeVid.duration : 10;
           setTimeout(() => {
               if(recorder.state === "recording") recorder.stop();
           }, vidDuration * 1000);
 
       } catch (err) {
-          alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ (CORS Issue): " + err.message);
+          alert("ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
       }
   };
 
@@ -656,23 +670,23 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
               if (globalReelsFeed[currentFeedIndex]) {
                  if (navigator.share) {
                      await navigator.share({
-                        title: 'Hudko Media',
+                        title: 'Hudko Studio',
                         text: document.getElementById("caption-box").innerText,
                         url: globalReelsFeed[currentFeedIndex].url
                      });
                      return;
                  } else {
                      navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
-                     alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಡೈರೆಕ್ಟ್ ಫೈಲ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ.");
+                     alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
                      return;
                  }
               }
-              alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿಡಿಯೋ ಜನರೇಟ್ ಮಾಡಿ!");
+              alert("ದಯವಿಟ್ಟು ಮೊದಲು 💾 Save ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ಗ್ಯಾಲರಿ ಫೈಲ್ ರೆಡಿ ಮಾಡಿ!");
               return;
           }
 
           let ext = blobToShare.type.includes('webm') ? '.webm' : '.mp4';
-          const fileToShare = new File([blobToShare], `Hudko_Cinematic_${Date.now()}${ext}`, { type: blobToShare.type });
+          const fileToShare = new File([blobToShare], `Hudko_Reel_${Date.now()}${ext}`, { type: blobToShare.type });
           
           if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
               await navigator.share({
@@ -681,7 +695,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                   text: document.getElementById("caption-box").innerText
               });
           } else {
-              alert("ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ವಿಡಿಯೋ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡುತ್ತಿಲ್ಲ. ದಯವಿಟ್ಟು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಶೇರ್ ಮಾಡಿ.");
+              alert("ಡೈರೆಕ್ಟ್ ವಾಟ್ಸಾಪ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಆಗ್ತಿಲ್ಲ, ಮೊದಲು ವಿಡಿಯೋವನ್ನು 💾 Save ಮಾಡಿ ನಂತರ ಗ್ಯಾಲರಿಯಿಂದ ಕಳುಹಿಸಿ.");
           }
       } catch (err) {
           console.log("ಶೇರಿಂಗ್ ಫೇಲ್ ಆಗಿದೆ: ", err);
