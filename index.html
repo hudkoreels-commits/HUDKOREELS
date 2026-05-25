@@ -9,7 +9,6 @@
 
 <style>
 * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
-/* ಇಲ್ಲಿ 100vh ಬದಲಿಗೆ 100dvh ಬಳಸಲಾಗಿದೆ, ಇದರಿಂದ ಮೊಬೈಲ್ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಫೂಟರ್ ಕಟ್ ಆಗಲ್ಲ */
 body { background: #000; overflow: hidden; color: white; user-select: none; height: 100dvh; width: 100vw; display: flex; flex-direction: column; }
 
 /* AUTH SCREEN */
@@ -22,15 +21,17 @@ body { background: #000; overflow: hidden; color: white; user-select: none; heig
 .signup-btn { background: transparent; color: #ffaa00; border: 1px solid rgba(255,170,0,0.4); margin-top: 10px; width: 100%; }
 
 /* LIVE IN-APP CAMERA OVERLAY */
-#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 500; display: none; flex-direction: column; justify-content: space-between; padding: 20px; }
-#cameraPreview { width: 100%; height: 75dvh; object-fit: cover; border-radius: 20px; background: #222; transform: scaleX(-1); }
+#cameraRecorderContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 600; display: none; flex-direction: column; justify-content: space-between; padding: 20px; }
+#cameraContainerWrapper { width: 100%; height: 75dvh; position: relative; border-radius: 20px; overflow: hidden; background: #222; }
+#cameraPreview { width: 100%; height: 100%; object-fit: cover; display: none; }
+#cameraCanvas { width: 100%; height: 100%; object-fit: cover; background: #000; }
 .cam-controls { display: flex; justify-content: space-around; align-items: center; width: 100%; height: 15dvh; }
 .cam-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
 .record-trigger-btn { width: 75px; height: 75px; border-radius: 50%; background: #ff0055; border: 5px solid white; box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); position: relative; cursor: pointer; }
 .record-trigger-btn.recording { background: #fff; border-color: #ff0055; animation: recPulse 1s infinite alternate; }
 @keyframes recPulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
-/* APP LAYOUT - TRUE TIKTOK FULL SCREEN */
+/* APP LAYOUT */
 #appContent { display: none; height: 100dvh; width: 100vw; position: relative; background: #000; }
 #top { position: absolute; top: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); display: flex; justify-content: space-between; align-items: center; padding: 25px 15px 0 15px; z-index: 100; }
 .brand { font-weight: 900; font-size: 18px; background: linear-gradient(45deg, #ffaa00, #ff0055, #00fff2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -63,7 +64,7 @@ video { width: 100%; height: 100%; object-fit: cover; background: #000; transiti
 #gridOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none; z-index: 7; display: none; }
 #cyberOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 8; display: none; }
 
-/* OVERLAY TEXT - POSITIONED PERFECTLY ABOVE FOOTER */
+/* OVERLAY TEXT */
 .info-overlay-layer { position: absolute; bottom: 25px; left: 15px; right: 75px; pointer-events: none; z-index: 15; display: flex; flex-direction: column; gap: 6px; }
 .uploader-profile-name { font-size: 15px; font-weight: 700; color: #00fff2; text-shadow: 1px 1px 4px #000; }
 .subtitle-text { color: #fff; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 8px; display: inline-block; border-left: 3px solid #ffaa00; width: fit-content; }
@@ -112,7 +113,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 .song-artist-sub { font-size: 9px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .song-play-btn-circle { width: 26px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; border: none; }
 
-/* TRUE TIKTOK FOOTER NAV BAR WITH POSITION FIXED FIX */
+/* BOTTOM STUDIONAV */
 #bottomStudioNav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: space-around; align-items: center; z-index: 500; padding-bottom: env(safe-area-inset-bottom); }
 .footer-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; cursor: pointer; font-size: 9px; font-weight: bold; width: 18%; height: 100%; transition: color 0.2s; }
 .footer-nav-item.active-trigger { color: #ffaa00; }
@@ -182,7 +183,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
 <audio id="bgmAudio" loop playsinline crossOrigin="anonymous"></audio>
 
 <div id="cameraRecorderContainer">
-    <video id="cameraPreview" autoplay playsinline muted></video>
+    <div id="cameraContainerWrapper">
+        <video id="cameraPreview" autoplay playsinline muted></video>
+        <canvas id="cameraCanvas"></canvas>
+    </div>
     <div class="cam-controls">
         <button class="cam-btn" onclick="closeLiveCamera()">✕</button>
         <button class="record-trigger-btn" id="recBtn" onclick="toggleLiveRecording()"></button>
@@ -233,9 +237,10 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
                 </div>
 
                 <div class="social-engagement">
+                    <div class="engage-item" onclick="triggerLocalGallerySave()"><div class="engage-icon" style="color:#00fff2;">💾</div><span>Save</span></div>
                     <div class="engage-item" onclick="triggerSocialAction('like')"><div class="engage-icon">❤️</div><span id="count-like">0</span></div>
                     <div class="engage-item" onclick="triggerSocialAction('comment')"><div class="engage-icon">💬</div><span id="count-comment">0</span></div>
-                    <div class="engage-item" onclick="triggerSocialAction('share')"><div class="engage-icon">✈️</div><span>Share</span></div>
+                    <div class="engage-item" onclick="triggerDirectFileShare()"><div class="engage-icon" style="color:#ffaa00;">✈️</div><span>Share</span></div>
                     <div class="engage-item" style="margin-top: 5px;" onclick="logoutApp()"><div class="engage-icon" style="color:#ff0055;">✕</div><span>Logout</span></div>
                 </div>
                 <video id="v" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-sign-41846-large.mp4"></video>
@@ -313,10 +318,15 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   let mediaRecorder = null;
   let recordedChunks = [];
   let currentFacingMode = "user";
+  let canvasAnimationId = null;
 
   const bgmAudioPlayer = document.getElementById("bgmAudio");
   const activeVid = document.getElementById("v");
   const progressBar = document.getElementById("progressBar");
+
+  const cameraVideo = document.getElementById("cameraPreview");
+  const cameraCanvas = document.getElementById("cameraCanvas");
+  const canvasCtx = cameraCanvas.getContext("2d");
 
   const KANNADA_PLAYLISTS = [
       { name: "KGF 2", term: "KGF Chapter 2", img: "https://api.dicebear.com/7.x/initials/svg?seed=KGF" },
@@ -402,27 +412,59 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       'f-retro-3': { name: 'Polaroid Instant', border: '18px solid #fcfaf2', shadow: '0 12px 24px rgba(0,0,0,0.4)', padding: '18px' }
   };
 
-  // 📸 CAMERA ENGINE
+  // 📸 LIVE CANVAS RENDERING ENGINE WITH FILTERS
+  function renderLiveCameraCanvas() {
+      if (cameraVideo.paused || cameraVideo.ended) return;
+
+      let baseLutString = LUT_PRESETS[currentLUT] || '';
+      let gradingString = `brightness(${gradingSettings.brightness}%) contrast(${gradingSettings.contrast}%) saturate(${gradingSettings.saturate}%) hue-rotate(${gradingSettings.hueRotate}deg) sepia(${gradingSettings.sepia}%) blur(${gradingSettings.blur}px) invert(${gradingSettings.invert}%)`;
+      canvasCtx.filter = `${baseLutString} ${gradingString}`.trim();
+
+      canvasCtx.clearRect(0, 0, cameraCanvas.width, cameraCanvas.height);
+      
+      if (currentFacingMode === "user") {
+          canvasCtx.save();
+          canvasCtx.translate(cameraCanvas.width, 0);
+          canvasCtx.scale(-1, 1);
+          canvasCtx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+          canvasCtx.restore();
+      } else {
+          canvasCtx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+      }
+
+      canvasAnimationId = requestAnimationFrame(renderLiveCameraCanvas);
+  }
+
+  // CAMERA ENGINE
   window.openLiveCamera = async () => {
       document.getElementById("cameraRecorderContainer").style.display = "flex";
       try {
           cameraStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: currentFacingMode, width: 720, height: 1280 }, 
+              video: { facingMode: currentFacingMode, width: { ideal: 720 }, height: { ideal: 1280 } }, 
               audio: true 
           });
-          document.getElementById("cameraPreview").srcObject = cameraStream;
+          cameraVideo.srcObject = cameraStream;
+          cameraVideo.onloadedmetadata = () => {
+              cameraVideo.play();
+              cameraCanvas.width = cameraVideo.videoWidth || 720;
+              cameraCanvas.height = cameraVideo.videoHeight || 1280;
+              renderLiveCameraCanvas();
+          };
       } catch (err) { alert("ಕ್ಯಾಮೆರಾ ಪರ್ಮಿಷನ್ ನೀಡಿ: " + err.message); }
   };
 
   window.closeLiveCamera = () => {
+      if(canvasAnimationId) cancelAnimationFrame(canvasAnimationId);
       if(cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+      cameraVideo.pause();
       document.getElementById("cameraRecorderContainer").style.display = "none";
       bgmAudioPlayer.pause();
   };
 
   window.flipLiveCamera = () => {
       currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
-      document.getElementById("cameraPreview").style.transform = currentFacingMode === "user" ? "scaleX(-1)" : "none";
+      if(canvasAnimationId) cancelAnimationFrame(canvasAnimationId);
+      if(cameraStream) cameraStream.getTracks().forEach(track => track.stop());
       openLiveCamera();
   };
 
@@ -434,9 +476,13 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           bgmAudioPlayer.pause();
       } else {
           recordedChunks = [];
+          
+          // ಕ್ಯಾನ್ವಾಸ್‌ನಿಂದ ಫಿಲ್ಟರ್ ಆಗಿರೋ ಲೈವ್ ವಿಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಪಡೆಯಿರಿ
+          let canvasStream = cameraCanvas.captureStream(30); 
           let mixedStream = new MediaStream();
-          cameraStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
+          canvasStream.getVideoTracks().forEach(track => mixedStream.addTrack(track));
 
+          // ಆಡಿಯೋ ಮಿಕ್ಸಿಂಗ್ ಲಾಜಿಕ್ (ಮ್ಯೂಸಿಕ್ + ಮೈಕ್)
           if (selectedAudioUrl) {
               const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
               const sourceNode = audioCtx.createMediaElementSource(bgmAudioPlayer);
@@ -469,6 +515,42 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           mediaRecorder.start();
           recBtn.classList.add("recording");
           if(selectedAudioUrl) { bgmAudioPlayer.muted = false; bgmAudioPlayer.currentTime = 0; bgmAudioPlayer.play().catch(()=>{}); }
+      }
+  };
+
+  // FAST LOCAL SAVE TO GALLERY OPTION
+  window.triggerLocalGallerySave = () => {
+      if(!activeLocalVideoFile) return alert("ಉಳಿಸಲು ಯಾವುದೇ ಹೊಸ ರೆಕಾರ್ಡೆಡ್ ವಿಡಿಯೋ ಇಲ್ಲ!");
+      const videoUrl = URL.createObjectURL(activeLocalVideoFile);
+      const a = document.createElement("a");
+      a.href = videoUrl;
+      a.download = `Hudko_Studio_Reel_${Date.now()}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      alert("💾 ವಿಡಿಯೋ ನೇರವಾಗಿ ನಿಮ್ಮ ಗ್ಯಾಲರಿಗೆ ಸೇವ್ ಆಗಿದೆ!");
+  };
+
+  // DIRECT FILE SHARING (WITHOUT SERVER EXPORT LATE)
+  window.triggerDirectFileShare = async () => {
+      if(!activeLocalVideoFile) return alert("ಶೇರ್ ಮಾಡಲು ಯಾವುದೇ ಹೊಸ ವಿಡಿಯೋ ರೆಕಾರ್ಡ್ ಮಾಡಿಲ್ಲ!");
+      const fileToShare = new File([activeLocalVideoFile], `hudko_reel_${Date.now()}.mp4`, { type: "video/mp4" });
+      
+      if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
+          try {
+              await navigator.share({
+                  files: [fileToShare],
+                  title: 'Hudko Reels Max',
+                  text: document.getElementById("caption-box").innerText
+              });
+          } catch (err) {
+              console.log("ಶೇರಿಂಗ್ ಕ್ಯಾನ್ಸಲ್ ಅಥವಾ ಫೇಲ್ ಆಗಿದೆ: ", err);
+          }
+      } else {
+          if(globalReelsFeed[currentFeedIndex]) {
+              navigator.clipboard.writeText(globalReelsFeed[currentFeedIndex].url);
+              alert("ನಿಮ್ಮ ಬ್ರೌಸರ್ ಡೈರೆಕ್ಟ್ ಶೇರ್ ಸಪೋರ್ಟ್ ಮಾಡಲ್ಲ, ಹಾಗಾಗಿ ರೀಲ್ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
+          }
       }
   };
 
@@ -562,8 +644,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
           let commentText = prompt("ನಿಮ್ಮ ಕಾಮೆಂಟ್:"); if(!commentText) return;
           await updateDoc(reelRef, { comments: arrayUnion({ user: currentUser ? currentUser.email : "Guest", text: commentText }) });
           document.getElementById("count-comment").innerText = parseInt(document.getElementById("count-comment").innerText) + 1;
-      } else if (action === 'share') {
-          navigator.clipboard.writeText(currentReel.url); alert("ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
       }
   };
 
@@ -589,7 +669,6 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
       } catch (err) { alert(err.message); } finally { expBtn.innerText = "⚡ Export"; }
   };
 
-  // DYNAMIC SLIDE TRIGGER FROM FOOTER BAR BUTTONS
   window.triggerPanelOpen = (tabType, labelHeader) => {
       document.querySelectorAll(".footer-nav-item").forEach(item => item.classList.remove("active-trigger"));
       
@@ -795,6 +874,7 @@ input[type=range] { width: 100%; accent-color: #ffaa00; cursor: pointer; }
   window.logoutApp = logoutApp; window.loginWithEmail = loginWithEmail; window.signUpWithEmail = signUpWithEmail; 
   window.exportCinematicVideo = exportCinematicVideo; window.openLiveCamera = openLiveCamera; 
   window.closeLiveCamera = closeLiveCamera; window.flipLiveCamera = flipLiveCamera; window.toggleLiveRecording = toggleLiveRecording;
+  window.triggerLocalGallerySave = triggerLocalGallerySave; window.triggerDirectFileShare = triggerDirectFileShare;
 </script>
 </body>
 </html>
